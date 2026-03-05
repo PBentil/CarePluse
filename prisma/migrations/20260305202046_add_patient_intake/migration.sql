@@ -1,0 +1,18 @@
+-- AlterTable
+ALTER TABLE "Patient" ADD COLUMN     "address" TEXT,
+ADD COLUMN     "allergies" TEXT,
+ADD COLUMN     "consentPrivacy" BOOLEAN,
+ADD COLUMN     "consentTerms" BOOLEAN,
+ADD COLUMN     "consentTreatment" BOOLEAN,
+ADD COLUMN     "currentMedication" TEXT,
+ADD COLUMN     "dateOfBirth" TIMESTAMP(3),
+ADD COLUMN     "emergencyContactName" TEXT,
+ADD COLUMN     "emergencyContactNumber" TEXT,
+ADD COLUMN     "gender" TEXT,
+ADD COLUMN     "identificationDocument" TEXT,
+ADD COLUMN     "identificationNumber" TEXT,
+ADD COLUMN     "identificationType" TEXT,
+ADD COLUMN     "insurancePolicyNumber" TEXT,
+ADD COLUMN     "insuranceProvider" TEXT,
+ADD COLUMN     "occupation" TEXT,
+ADD COLUMN     "primaryPhysician" TEXT;
