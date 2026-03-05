@@ -5,7 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { CustomFormField } from "../customFormField"
 import { SubmitButton } from "../submitButton"
-import { toast , Toaster } from "@/components/ui/sonner" // ✅ import toast function + Toaster
+import { toast , Toaster } from "@/components/ui/sonner" 
+import { useRouter } from "next/navigation"
 
 const formSchema = z.object({
   fullName: z.string().min(3, "Full name must be at least 3 characters"),
@@ -16,38 +17,40 @@ const formSchema = z.object({
 type PatientFormType = z.infer<typeof formSchema>
 
 export default function PatientForm() {
+    const router = useRouter()
   const { register, handleSubmit, control, reset, formState: { errors, isSubmitting } } =
     useForm<PatientFormType>({
       resolver: zodResolver(formSchema),
       defaultValues: { fullName: "", email: "", phone: "+233 " },
     })
 
-  const onSubmit = async (data: PatientFormType) => {
-    try {
-      const response = await fetch("/api/patients", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      })
-
-      if (!response.ok) throw new Error("Failed to create patient")
-
-      const result = await response.json()
-      console.log("Patient created:", result)
-
-      toast.success(`Patient ${data.fullName} created successfully.`)
-
-      reset() // clear form after success
-
-    } catch (error: any) {
-      console.error("Error:", error)
-      toast.error(error.message || "Something went wrong")
-    }
-  }
+    const onSubmit = async (data: PatientFormType) => {
+        try {
+          const response = await fetch("/api/patients", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          })
+      
+          if (!response.ok) throw new Error("Failed to create patient")
+      
+          const result = await response.json()
+      
+          toast.success(`Patient ${data.fullName} created successfully.`)
+      
+          reset()
+      
+          router.push(`/patients/${result.id}/intake?fullName=${data.fullName}&email=${data.email}&phone=${data.phone}`)
+      
+        } catch (error: any) {
+          console.error("Error:", error)
+          toast.error(error.message || "Something went wrong")
+        }
+      }
 
   return (
     <>
-      <Toaster /> {/* Renders toast container once */}
+      <Toaster /> 
 
       <form
         onSubmit={handleSubmit(onSubmit)}
