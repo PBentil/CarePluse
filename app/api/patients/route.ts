@@ -19,7 +19,6 @@ export async function POST(req: Request) {
     })
 
     return NextResponse.json(newPatient, { status: 201 })
-
   } catch (error: any) {
     return NextResponse.json(
       { error: error.message || "Something went wrong" },
