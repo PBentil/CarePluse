@@ -26,9 +26,12 @@ interface PatientIntakeFormProps {
   }
 }
 
-export default function PatientIntakeForm({ patientId, defaultValues }: PatientIntakeFormProps) {
+export default function PatientIntakeForm({
+  patientId,
+  defaultValues,
+}: PatientIntakeFormProps) {
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
+  const { register, handleSubmit, formState:{errors,isSubmitting} } = useForm({
     resolver: zodResolver(patientIntakeSchema),
     defaultValues: {
       fullName: defaultValues?.fullName || "",
@@ -36,23 +39,31 @@ export default function PatientIntakeForm({ patientId, defaultValues }: PatientI
       phone: defaultValues?.phone || "",
     }
   })
+  
+   
 
-  // ... rest of the component stays the same
-
-  const onSubmit = async (data:any) => {
+  const onSubmit = async (data: any) => {
     try {
+
+      if (!patientId) {
+        toast.error("Patient ID missing")
+        return
+      }
       const response = await fetch(`/api/patients/${patientId}`, {
-        method:"PATCH",
-        headers:{ "Content-Type":"application/json"},
-        body: JSON.stringify(data)
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       })
 
-      if(!response.ok){
+      if (!response.ok) {
         toast.error("Failed to save medical information")
         return
       }
 
       toast.success("Medical information saved successfully")
+
     } catch (error: any) {
       toast.error(error.message || "Something went wrong")
     }
@@ -60,17 +71,16 @@ export default function PatientIntakeForm({ patientId, defaultValues }: PatientI
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-
-      {/* PERSONAL INFORMATION */}
       <div className="bg-card p-6 rounded-lg space-y-6 shadow">
-        <h2 className="text-xl font-semibold">Personal Information</h2>
+        <h2 className="text-xl font-semibold text-primary">Personal Information</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
           <CustomFormField
             label="Full Name"
             name="fullName"
             register={register}
-            error={errors.fullName?.message}
+            readOnly
           />
 
           <CustomFormField
@@ -78,14 +88,14 @@ export default function PatientIntakeForm({ patientId, defaultValues }: PatientI
             name="email"
             type="email"
             register={register}
-            error={errors.email?.message}
+            readOnly
           />
 
           <CustomFormField
             label="Phone Number"
             name="phone"
             register={register}
-            error={errors.phone?.message}
+            readOnly
           />
 
           <CustomFormField
@@ -96,17 +106,26 @@ export default function PatientIntakeForm({ patientId, defaultValues }: PatientI
             error={errors.dateOfBirth?.message}
           />
 
-          {/* Gender Dropdown */}
+          {/* Gender */}
+
           <div className="flex flex-col">
             <label className="mb-1 font-medium">Gender</label>
+
             <select
               {...register("gender")}
               className="border border-gray-300 rounded p-2"
             >
               <option value="">Select Gender</option>
-              {genders.map(g => <option key={g} value={g}>{g}</option>)}
+              {genders.map((g) => (
+                <option key={g} value={g}>
+                  {g}
+                </option>
+              ))}
             </select>
-            {errors.gender && <p className="text-red-500 text-sm">{errors.gender.message}</p>}
+
+            {errors.gender && (
+              <p className="text-red-500 text-sm">{errors.gender.message}</p>
+            )}
           </div>
 
           <CustomFormField
@@ -136,25 +155,44 @@ export default function PatientIntakeForm({ patientId, defaultValues }: PatientI
             register={register}
             error={errors.emergencyContactNumber?.message}
           />
+
         </div>
       </div>
 
       {/* MEDICAL INFORMATION */}
+
       <div className="bg-card p-6 rounded-lg space-y-6 shadow">
-        <h2 className="text-xl font-semibold">Medical Information</h2>
+
+        <h2 className="text-xl font-semibold text-primary">Medical Information</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Primary Care Physician Dropdown */}
+
           <div className="flex flex-col">
-            <label className="mb-1 font-medium">Primary Care Physician</label>
+
+            <label className="mb-1 font-medium">
+              Primary Care Physician
+            </label>
+
             <select
               {...register("primaryCarePhysician")}
               className="border border-gray-300 rounded p-2"
             >
               <option value="">Select Doctor</option>
-              {doctors.map(d => <option key={d} value={d}>{d}</option>)}
+
+              {doctors.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+
             </select>
-            {errors.primaryCarePhysician && <p className="text-red-500 text-sm">{errors.primaryCarePhysician.message}</p>}
+
+            {errors.primaryCarePhysician && (
+              <p className="text-red-500 text-sm">
+                {errors.primaryCarePhysician.message}
+              </p>
+            )}
+
           </div>
 
           <CustomFormField
@@ -172,7 +210,7 @@ export default function PatientIntakeForm({ patientId, defaultValues }: PatientI
           />
 
           <CustomFormField
-            label="Allergies (if any)"
+            label="Allergies"
             name="allergies"
             register={register}
             error={errors.allergies?.message}
@@ -184,25 +222,46 @@ export default function PatientIntakeForm({ patientId, defaultValues }: PatientI
             register={register}
             error={errors.currentMedication?.message}
           />
+
         </div>
       </div>
 
-      {/* IDENTIFICATION & VERIFICATION */}
+      {/* IDENTIFICATION */}
+
       <div className="bg-card p-6 rounded-lg space-y-6 shadow">
-        <h2 className="text-xl font-semibold">Identification & Verification</h2>
+
+        <h2 className="text-xl font-semibold text-primary">
+          Identification & Verification
+        </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Identification Type Dropdown */}
+
           <div className="flex flex-col">
-            <label className="mb-1 font-medium">Identification Type</label>
+
+            <label className="mb-1 font-medium">
+              Identification Type
+            </label>
+
             <select
               {...register("identificationType")}
               className="border border-gray-300 rounded p-2"
             >
               <option value="">Select ID Type</option>
-              {idTypes.map(i => <option key={i} value={i}>{i}</option>)}
+
+              {idTypes.map((i) => (
+                <option key={i} value={i}>
+                  {i}
+                </option>
+              ))}
+
             </select>
-            {errors.identificationType && <p className="text-red-500 text-sm">{errors.identificationType.message}</p>}
+
+            {errors.identificationType && (
+              <p className="text-red-500 text-sm">
+                {errors.identificationType.message}
+              </p>
+            )}
+
           </div>
 
           <CustomFormField
@@ -212,20 +271,19 @@ export default function PatientIntakeForm({ patientId, defaultValues }: PatientI
             error={errors.identificationNumber?.message}
           />
 
-          <CustomFormField
-            label="Upload Identification Document"
-            name="identificationDocument"
-            type="file"
-            register={register}
-            error={errors.identificationDocument?.message as string}
-          />
         </div>
       </div>
 
       {/* CONSENT */}
+
       <div className="bg-card p-6 rounded-lg space-y-4 shadow">
-        <h2 className="text-xl font-semibold">Consent & Privacy</h2>
+
+        <h2 className="text-xl font-semibold text-primary">
+          Consent & Privacy
+        </h2>
+
         <div className="space-y-3 text-sm">
+
           <label className="flex items-center gap-2">
             <input type="checkbox" {...register("treatmentConsent")} />
             I consent to receive treatment
@@ -233,19 +291,22 @@ export default function PatientIntakeForm({ patientId, defaultValues }: PatientI
 
           <label className="flex items-center gap-2">
             <input type="checkbox" {...register("disclosureConsent")} />
-            I agree to disclosure of medical information for treatment
+            I agree to disclosure of medical information
           </label>
 
           <label className="flex items-center gap-2">
             <input type="checkbox" {...register("privacyPolicy")} />
             I agree to the privacy policy
           </label>
+
         </div>
+
       </div>
 
       <SubmitButton isLoading={isSubmitting}>
         Submit Medical Information
       </SubmitButton>
+
     </form>
   )
 }

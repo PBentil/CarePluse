@@ -8,32 +8,25 @@ datasource db {
 }
 
 model Patient {
-  id                     String   @id @default(uuid())
-  fullName               String
-  email                  String   @unique
-  phone                  String
-
-  dateOfBirth            DateTime?
-  gender                 String?
-  address                String?
-  occupation             String?
-
-  emergencyContactName   String?
-  emergencyContactNumber String?
-
-  primaryPhysician       String?
-  insuranceProvider      String?
-  insurancePolicyNumber  String?
-  allergies              String?
-  currentMedication      String?
-
-  identificationType     String?
-  identificationNumber   String?
-  identificationDocument String?
-
-  consentTerms           Boolean?
-  consentPrivacy         Boolean?
-  consentTreatment       Boolean?
-
-  createdAt              DateTime @default(now())
+  id                       String   @id @default(uuid())
+  fullName                 String
+  email                    String
+  phone                    String
+  dateOfBirth              DateTime
+  gender                   String
+  address                  String
+  occupation               String
+  emergencyContactName     String
+  emergencyContactNumber   String
+  primaryPhysician         String?
+  insuranceProvider        String?
+  insurancePolicyNumber    String?
+  allergies                String?
+  currentMedication        String?
+  identificationType       String?
+  identificationNumber     String?
+  consentTerms             Boolean?
+  consentPrivacy           Boolean?
+  consentTreatment         Boolean?
+  createdAt                DateTime @default(now())
 }

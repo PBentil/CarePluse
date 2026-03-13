@@ -1,6 +1,5 @@
 "use client"
 
-import React from "react"
 import { FieldValues, Path, UseFormRegister, Controller, Control } from "react-hook-form"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -16,8 +15,11 @@ interface CustomFormFieldProps<T extends FieldValues> {
   error?: string
   textarea?: boolean
   phone?: boolean
+  disabled?: boolean      
+  readOnly?: boolean     
   countries?: { code: string; label: string; dialCode: string }[]
 }
+
 
 export function CustomFormField<T extends FieldValues>({
   label,
@@ -29,6 +31,8 @@ export function CustomFormField<T extends FieldValues>({
   error,
   textarea = false,
   phone = false,
+  disabled=false,
+  readOnly=false,
   countries = [
     { code: "US", label: "United States", dialCode: "+1" },
     { code: "GB", label: "United Kingdom", dialCode: "+44" },
@@ -86,6 +90,8 @@ export function CustomFormField<T extends FieldValues>({
             error ? "border-destructive" : "border-border"
           }`}
           rows={4}
+          disabled={disabled}     
+  readOnly={readOnly}
         />
       ) : (
         <Input
@@ -94,6 +100,8 @@ export function CustomFormField<T extends FieldValues>({
           placeholder={placeholder}
           {...register!(name)}
           className={error ? "border-destructive" : "border-border"}
+          disabled={disabled}
+          readOnly={readOnly}
         />
       )}
 
