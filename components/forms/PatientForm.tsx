@@ -5,8 +5,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { CustomFormField } from "../customFormField"
 import { SubmitButton } from "../submitButton"
-import { toast , Toaster } from "@/components/ui/sonner" 
+import { toast, Toaster } from "@/components/ui/sonner"
 import { useRouter } from "next/navigation"
+import { useState } from "react"
 
 const formSchema = z.object({
   fullName: z.string().min(3, "Full name must be at least 3 characters"),
@@ -17,49 +18,57 @@ const formSchema = z.object({
 type PatientFormType = z.infer<typeof formSchema>
 
 export default function PatientForm() {
-    const router = useRouter()
-  const { register, handleSubmit, control, reset, formState: { errors, isSubmitting } } =
-    useForm<PatientFormType>({
-      resolver: zodResolver(formSchema),
-      defaultValues: { fullName: "", email: "", phone: "+233 " },
-    })
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
 
-    const onSubmit = async (data: PatientFormType) => {
-        try {
-          const response = await fetch("/api/patients", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-          })
-      
-          if (!response.ok) throw new Error("Failed to create patient")
-      
-          const result = await response.json()
-      
-          toast.success(`Patient ${data.fullName} created successfully.`)
-      
-          reset()
-      
-          router.push(`/patients/${result.id}/intake?fullName=${data.fullName}&email=${data.email}&phone=${data.phone}`)
-      
-        } catch (error: any) {
-          console.error("Error:", error)
-          toast.error(error.message || "Something went wrong")
-        }
-      }
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm<PatientFormType>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { fullName: "", email: "", phone: "+233 " },
+  })
+
+  const onSubmit = async (data: PatientFormType) => {
+    try {
+      setLoading(true)
+
+      const response = await fetch("/api/patients", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      })
+
+      if (!response.ok) throw new Error("Failed to create patient")
+
+      const result = await response.json()
+
+      toast.success(`Welcome, ${data.fullName}!`)
+      reset()
+
+      router.push(
+        `/patients/${result.id}/intake?fullName=${data.fullName}&email=${data.email}&phone=${data.phone}`
+      )
+    } catch (error: any) {
+      toast.error(error.message || "Something went wrong")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <>
-      <Toaster /> 
+      <Toaster />
 
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col space-y-6 bg-card p-6 rounded-lg shadow-md"
-      >
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+
         <CustomFormField
           label="Full Name"
           name="fullName"
-          placeholder="Enter full name"
+          placeholder="Kofi Mensah"
           register={register}
           error={errors.fullName?.message}
         />
@@ -68,7 +77,7 @@ export default function PatientForm() {
           label="Email"
           name="email"
           type="email"
-          placeholder="Enter email"
+          placeholder="kofi@example.com"
           register={register}
           error={errors.email?.message}
         />
@@ -77,11 +86,14 @@ export default function PatientForm() {
           label="Phone Number"
           name="phone"
           phone
-          control={control}   
+          control={control}
           error={errors.phone?.message}
         />
 
-        <SubmitButton isLoading={isSubmitting}>Get Started</SubmitButton>
+        <SubmitButton isLoading={loading}>
+          Get Started
+        </SubmitButton>
+
       </form>
     </>
   )
