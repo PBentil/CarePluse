@@ -19,7 +19,7 @@ export default function Home() {
                 Welcome to CarePulse
               </h1>
               <p className="mt-1.5 text-sm text-zinc-500 dark:text-zinc-400">
-                Let's start with some basic information to get you set up.
+                Let&#39;s start with some basic information to get you set up.
               </p>
             </div>
 
@@ -31,7 +31,7 @@ export default function Home() {
         <footer className="px-8 py-5 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-sm text-zinc-400 dark:text-zinc-500">
           <p>© {new Date().getFullYear()} CarePulse</p>
           <Link
-            href="/?admin=true"
+            href="/admin/login"
             className="text-primary hover:text-zinc-900 hover:underline dark:hover:text-white transition-colors"
           >
             Admin portal →
@@ -43,8 +43,7 @@ export default function Home() {
       <div className="hidden lg:block lg:col-span-2 relative">
         <div className="sticky top-0 h-screen">
 
-          {/* Gradient overlay */}
-          <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+          <div className="absolute inset-0 z-10 bg-linear-to-t from-black/50 via-black/10 to-transparent" />
 
           <Image
             src="/assets/images/onboarding.png"
@@ -54,7 +53,6 @@ export default function Home() {
             priority
           />
 
-          {/* Frosted glass caption */}
           <div className="absolute bottom-8 left-6 right-6 z-20">
             <div className="rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 p-5 text-white">
               <p className="text-xs font-medium uppercase tracking-widest opacity-70 mb-1">

@@ -32,3 +32,26 @@ model Patient {
   createdAt             DateTime @default(now())
 }
 
+model Appointment {
+  id        String   @id @default(uuid())
+  patientId String
+  doctorId  String
+  date      DateTime
+  reason    String
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+}
+
+model Doctor {
+  id        String   @id @default(uuid())
+  name      String
+  specialty String?
+  createdAt DateTime @default(now())
+}
+
+model Admin {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
