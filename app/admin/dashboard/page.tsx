@@ -5,15 +5,7 @@ import { Users, Calendar, Stethoscope } from "lucide-react"
 import {Column, DataTable} from "@/components/admin/data-table";
 import {Sidebar} from "@/components/admin/sidebar";
 import {Header} from "@/components/admin/header";
-
-interface Patient {
-    id: string
-    fullName: string
-    email: string
-    phone: string
-    gender?: string
-    createdAt: string
-}
+import {Patient} from "@/types";
 
 const patientColumns: Column<Patient>[] = [
     {
@@ -67,16 +59,11 @@ export default function AdminDashboard() {
 
         fetch("/api/admin/patients")
             .then((r) => r.json())
-            .then((d) => { setPatients(d); setLoadingPatients(false) })
+            .then((d) => { setPatients(d.patients); setLoadingPatients(false) })
     }, [])
 
     return (
-        <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
-            <Sidebar />
-            <Header />
-
-            <main className="ml-60 pt-16.25">
-                <div className="p-8 space-y-8">
+            <div className="p-8 space-y-8">
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {stats.map(({ label, key, icon: Icon }) => (
@@ -109,9 +96,5 @@ export default function AdminDashboard() {
                         emptyMessage="No patients registered yet"
                     />
 
-                </div>
-            </main>
-
-        </div>
-    )
+                </div>)
 }
