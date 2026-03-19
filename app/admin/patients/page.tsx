@@ -1,0 +1,171 @@
+"use client"
+
+import { useEffect, useState, useCallback } from "react"
+
+import {ChevronLeft, ChevronRight, Plus} from "lucide-react"
+import {Column, DataTable} from "@/components/admin/data-table";
+import {Patient} from "@/types";
+import {PageHeader} from "@/components/admin/page-header";
+import {Modal} from "@/components/admin/modal";
+import {AddPatientForm} from "@/components/forms/add-patient";
+
+
+const patientColumns: Column<Patient>[] = [
+    {
+        header: "Name",
+        accessor: (row) => (
+            <div className="flex items-center gap-3">
+                <div className="h-8 w-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-xs font-medium text-zinc-600 dark:text-zinc-300 shrink-0">
+                    {row.fullName.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
+                </div>
+                <span className="font-medium text-zinc-900 dark:text-white">{row.fullName}</span>
+            </div>
+        ),
+    },
+    { header: "Email", accessor: "email" },
+    { header: "Phone", accessor: "phone" },
+    {
+        header: "Gender",
+        accessor: (row) =>
+            row.gender ? (
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
+          {row.gender}
+        </span>
+            ) : (
+                <span className="text-zinc-300 dark:text-zinc-600">—</span>
+            ),
+    },
+    {
+        header: "Registered",
+        accessor: (row) =>
+            new Date(row.createdAt).toLocaleDateString("en-GB", {
+                day: "numeric", month: "short", year: "numeric",
+            }),
+    },
+]
+
+const PAGE_SIZE = 10
+
+export default function PatientsPage() {
+    const [patients, setPatients]     = useState<Patient[]>([])
+    const [total, setTotal]           = useState(0)
+    const [page, setPage]             = useState(1)
+    const [search, setSearch]         = useState("")
+    const [debouncedSearch, setDebouncedSearch] = useState("")
+    const [loading, setLoading]       = useState(true)
+    const [modalOpen, setModalOpen] = useState(false)
+
+    useEffect(() => {
+        const t = setTimeout(() => setDebouncedSearch(search), 300)
+        return () => clearTimeout(t)
+    }, [search])
+
+    useEffect(() => { setPage(1) }, [debouncedSearch])
+
+    const fetchPatients = useCallback(async () => {
+        setLoading(true)
+        const params = new URLSearchParams({
+            page: String(page),
+            limit: String(PAGE_SIZE),
+            ...(debouncedSearch && { search: debouncedSearch }),
+        })
+        const res = await fetch(`/api/admin/patients?${params}`)
+        const data = await res.json()
+        setPatients(data.patients)
+        setTotal(data.total)
+        setLoading(false)
+    }, [page, debouncedSearch])
+
+    useEffect(() => { fetchPatients() }, [fetchPatients])
+
+    const totalPages = Math.ceil(total / PAGE_SIZE)
+
+    return (
+                <div className="p-8 space-y-6">
+                    <PageHeader
+                        title="All Patients"
+                        actions={[{ label: "Add Patient", icon: Plus, onClick: () => setModalOpen(true) }]}
+                    />
+
+                    <DataTable
+                        data={patients}
+                        columns={patientColumns}
+                        loading={loading}
+                        title={`Patients ${total > 0 ? `(${total})` : ""}`}
+                        emptyMessage="No patients found"
+                        searchValue={search}
+                        onSearchChange={setSearch}
+                        searchPlaceholder="Search by name or email..."
+                    />
+
+                    <Modal
+                        open={modalOpen}
+                        onClose={() => setModalOpen(false)}
+                        title="Add New Patient"
+                        description="Fill in the patient's details below."
+                        size="xl"
+                    >
+                        <AddPatientForm
+                            onSuccess={() => {
+                                setModalOpen(false)
+                                fetchPatients()
+                            }}
+                        />
+                    </Modal>
+
+                    {totalPages > 1 && (
+                        <div className="flex items-center justify-between px-1">
+                            <p className="text-xs text-zinc-400 dark:text-zinc-500">
+                                Showing {((page - 1) * PAGE_SIZE) + 1}–{Math.min(page * PAGE_SIZE, total)} of {total}
+                            </p>
+
+                            <div className="flex items-center gap-1">
+                                <button
+                                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                                    disabled={page === 1}
+                                    className="h-8 w-8 rounded-lg border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    <ChevronLeft className="h-4 w-4" />
+                                </button>
+
+                                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                                    .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
+                                    .reduce<(number | "...")[]>((acc, p, i, arr) => {
+                                        if (i > 0 && p - (arr[i - 1] as number) > 1) acc.push("...")
+                                        acc.push(p)
+                                        return acc
+                                    }, [])
+                                    .map((p, i) =>
+                                            p === "..." ? (
+                                                <span key={`ellipsis-${i}`} className="h-8 w-8 flex items-center justify-center text-xs text-zinc-400">
+                        …
+                      </span>
+                                            ) : (
+                                                <button
+                                                    key={p}
+                                                    onClick={() => setPage(p as number)}
+                                                    className={`h-8 w-8 rounded-lg text-xs font-medium transition-colors ${
+                                                        page === p
+                                                            ? "bg-zinc-900 dark:bg-white text-white dark:text-zinc-900"
+                                                            : "border border-zinc-200 dark:border-zinc-700 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                                                    }`}
+                                                >
+                                                    {p}
+                                                </button>
+                                            )
+                                    )}
+
+                                <button
+                                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                                    disabled={page === totalPages}
+                                    className="h-8 w-8 rounded-lg border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    <ChevronRight className="h-4 w-4" />
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                </div>
+    )
+}
