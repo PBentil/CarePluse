@@ -46,6 +46,7 @@ model Doctor {
   id        String   @id @default(uuid())
   name      String
   specialty String?
+  email   String @unique
   createdAt DateTime @default(now())
 }
 
