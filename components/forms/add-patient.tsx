@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
+import {useEffect, useState} from "react";
 
 const schema = z.object({
     fullName:               z.string().min(2, "Full name is required"),
@@ -30,7 +31,6 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>
 
-const doctors  = ["Dr. Kwame Mensah", "Dr. Akua Owusu", "Dr. John Doe", "Dr. Jane Smith"]
 const idTypes  = ["Ghana Card", "Health Insurance", "Passport", "Driver's License"]
 const genders  = ["Male", "Female", "Other"]
 
@@ -55,6 +55,14 @@ export function AddPatientForm({ onSuccess }: AddPatientFormProps) {
             consentTreatment: true,
         },
     })
+
+    const [doctors, setDoctors] = useState<{ id: string; name: string }[]>([])
+
+    useEffect(() => {
+        fetch("/api/admin/doctors?limit=100")
+            .then((r) => r.json())
+            .then((d) => setDoctors(d.doctors ?? []))
+    }, [])
 
     const onSubmit = async (data: FormValues) => {
         try {
@@ -140,7 +148,7 @@ export function AddPatientForm({ onSuccess }: AddPatientFormProps) {
             <div>
                 <p className="text-xs font-medium text-zinc-400 uppercase tracking-widest mb-3">Medical Information</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <Field label="Primary Physician"      name="primaryPhysician"      options={doctors} />
+                    <Field label="Primary Physician"      name="primaryPhysician"      options={doctors.map((d) => <option key={d.id} value={d.name}>{d.name}</option>)} />
                     <Field label="Insurance Provider"     name="insuranceProvider"     placeholder="e.g. NHIS" />
                     <Field label="Insurance Policy No."   name="insurancePolicyNumber" placeholder="Policy number" />
                     <Field label="Allergies"              name="allergies"             placeholder="e.g. Penicillin" />

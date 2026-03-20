@@ -7,13 +7,8 @@ import { SubmitButton } from "../submitButton"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { User, Heart, CreditCard, ShieldCheck } from "lucide-react"
+import {useEffect, useState} from "react";
 
-const doctors = [
-  "Dr. Kwame Mensah",
-  "Dr. Akua Owusu",
-  "Dr. John Doe",
-  "Dr. Jane Smith",
-]
 
 const idTypes = ["Ghana Card", "Health Insurance", "Passport", "Driver's License"]
 const genders = ["Male", "Female", "Other"]
@@ -64,6 +59,7 @@ export default function PatientIntakeForm({
                                             defaultValues,
                                           }: PatientIntakeFormProps) {
   const router = useRouter()
+  const [doctors, setDoctors] = useState<{ id: string; name: string }[]>([])
 
   const {
     register,
@@ -103,6 +99,13 @@ export default function PatientIntakeForm({
       toast.error(error.message || "Something went wrong")
     }
   }
+
+
+  useEffect(() => {
+    fetch("/api/admin/doctors?limit=100")
+        .then((r) => r.json())
+        .then((d) => setDoctors(d.doctors ?? []))
+  }, [])
 
   return (
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -187,7 +190,8 @@ export default function PatientIntakeForm({
               <FieldLabel>Primary Care Physician</FieldLabel>
               <select {...register("primaryCarePhysician")} className={selectClass}>
                 <option value="">Select doctor</option>
-                {doctors.map((d) => <option key={d} value={d}>{d}</option>)}
+                {doctors.map((d) => <option key={d.id} value={d.name}>{d.name}</option>)}
+
               </select>
               <FieldError message={errors.primaryCarePhysician?.message} />
             </div>
@@ -223,7 +227,6 @@ export default function PatientIntakeForm({
           </div>
         </SectionCard>
 
-        {/* Identification */}
         <SectionCard icon={CreditCard} title="Identification & Verification">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -245,7 +248,6 @@ export default function PatientIntakeForm({
           </div>
         </SectionCard>
 
-        {/* Consent */}
         <SectionCard icon={ShieldCheck} title="Consent & Privacy">
           <div className="space-y-4">
             {[
