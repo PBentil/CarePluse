@@ -94,7 +94,7 @@ export default function PatientIntakeForm({
 
       toast.success("Medical information saved successfully")
       reset()
-      router.push(`/success`)
+      router.push(`/success?patientId=${patientId}&fullName=${encodeURIComponent(data.fullName)}`)
     } catch (error: any) {
       toast.error(error.message || "Something went wrong")
     }
@@ -182,8 +182,6 @@ export default function PatientIntakeForm({
             />
           </div>
         </SectionCard>
-
-        {/* Medical Information */}
         <SectionCard icon={Heart} title="Medical Information">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
