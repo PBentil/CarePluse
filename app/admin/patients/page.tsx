@@ -23,7 +23,6 @@ export default function PatientsPage() {
     const [search, setSearch]           = useState("")
     const [debouncedSearch, setDebouncedSearch] = useState("")
     const [loading, setLoading]         = useState(true)
-
     const [addOpen, setAddOpen]         = useState(false)
     const [editPatient, setEditPatient] = useState<Patient | null>(null)
     const [deletePatient, setDeletePatient] = useState<Patient | null>(null)
@@ -106,7 +105,7 @@ export default function PatientsPage() {
                 <div className="flex items-center gap-1">
                     <button
                         onClick={() => setViewPatientId(row.id)}
-                        className="h-8 w-8 rounded-lg flex items-center justify-center text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                        className="h-8 w-8 rounded-lg flex items-center justify-center text-primary hover:text-zinc-600 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                     >
                         <Eye className="h-3.5 w-3.5" />
                     </button>
@@ -139,8 +138,6 @@ export default function PatientsPage() {
                 searchPlaceholder="Search by name or email..."
                 emptyMessage="No patients found"
             />
-
-            {/* Pagination */}
             {totalPages > 1 && (
                 <div className="flex items-center justify-between px-1">
                     <p className="text-xs text-zinc-400 dark:text-zinc-500">
@@ -191,12 +188,10 @@ export default function PatientsPage() {
                 </div>
             )}
 
-            {/* Add modal */}
             <Modal open={addOpen} onClose={() => setAddOpen(false)} title="Add New Patient" description="Fill in the patient's details below." size="xl">
                 <AddPatientForm onSuccess={() => { setAddOpen(false); fetchPatients() }} />
             </Modal>
 
-            {/* Edit modal */}
             <Modal open={!!editPatient} onClose={() => setEditPatient(null)} title="Edit Patient" description="Update the patient's information." size="xl">
                 {editPatient && (
                     <EditPatientForm

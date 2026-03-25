@@ -30,6 +30,7 @@ model Patient {
   consentPrivacy        Boolean?        
   consentTreatment      Boolean?        
   createdAt             DateTime @default(now())
+    appointments Appointment[]
 }
 
 model Appointment {
@@ -38,16 +39,22 @@ model Appointment {
   doctorId  String
   date      DateTime
   reason    String
+  notes     String?
   status    String   @default("pending")
+  rejectionReason   String?
+  rescheduledDate   DateTime?
   createdAt DateTime @default(now())
-}
 
+  patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor    Doctor   @relation(fields: [doctorId],  references: [id], onDelete: Cascade)
+}
 model Doctor {
   id        String   @id @default(uuid())
   name      String
   specialty String?
   email   String @unique
   createdAt DateTime @default(now())
+  appointments Appointment[]
 }
 
 model Admin {

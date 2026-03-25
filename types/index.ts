@@ -14,3 +14,20 @@
      email: string
      createdAt: string
  }
+
+ export type AppointmentStatus = "pending" | "confirmed" | "rejected" | "rescheduled"
+
+ export interface Appointment {
+     id: string
+     patientId: string
+     doctorId: string
+     date: string
+     reason: string
+     notes?: string
+     status: AppointmentStatus
+     rejectionReason?: string
+     rescheduledDate?: string
+     createdAt: string
+     patient: { fullName: string; email: string; phone: string }
+     doctor:  { name: string; specialty: string; email: string }
+ }

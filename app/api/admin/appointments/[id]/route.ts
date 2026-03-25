@@ -1,0 +1,128 @@
+import { NextRequest, NextResponse } from "next/server"
+import { prisma } from "@/lib/prisma"
+import {
+    appointmentConfirmedTemplate,
+    appointmentRejectedTemplate,
+    appointmentRescheduledTemplate,
+    sendEmail,
+    sendSMS
+} from "@/lib/notification";
+
+
+export async function PATCH(
+    req: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params
+        const body   = await req.json()
+        const { action, rejectionReason, rescheduledDate } = body
+
+        const existing = await prisma.appointment.findUnique({
+            where: { id },
+            include: {
+                patient: { select: { fullName: true, email: true, phone: true } },
+                doctor:  { select: { name: true, email: true } },
+            },
+        })
+
+        if (!existing) {
+            return NextResponse.json({ error: "Appointment not found" }, { status: 404 })
+        }
+
+        let updateData: any = {}
+
+        if (action === "confirm") {
+            updateData = { status: "confirmed" }
+
+            const formatted = new Date(existing.date).toLocaleDateString("en-GB", {
+                weekday: "long", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit",
+            })
+
+            const tpl = appointmentConfirmedTemplate({
+                patientName: existing.patient.fullName,
+                doctorName:  existing.doctor.name,
+                date:        formatted,
+            })
+
+            await Promise.all([
+                sendSMS(existing.patient.phone, tpl.sms),
+                sendEmail({ to: existing.patient.email, ...tpl.email }),
+            ])
+        }
+
+        else if (action === "reject") {
+            if (!rejectionReason) {
+                return NextResponse.json({ error: "Rejection reason is required" }, { status: 400 })
+            }
+            updateData = { status: "rejected", rejectionReason }
+
+            const tpl = appointmentRejectedTemplate({
+                patientName: existing.patient.fullName,
+                doctorName:  existing.doctor.name,
+                reason:      rejectionReason,
+            })
+
+            await Promise.all([
+                sendSMS(existing.patient.phone, tpl.sms),
+                sendEmail({ to: existing.patient.email, ...tpl.email }),
+            ])
+        }
+
+        else if (action === "reschedule") {
+            if (!rescheduledDate) {
+                return NextResponse.json({ error: "New date is required" }, { status: 400 })
+            }
+            updateData = { status: "rescheduled", rescheduledDate: new Date(rescheduledDate) }
+
+            const oldDate = new Date(existing.date).toLocaleDateString("en-GB", {
+                day: "numeric", month: "long", year: "numeric",
+            })
+            const newDate = new Date(rescheduledDate).toLocaleDateString("en-GB", {
+                weekday: "long", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit",
+            })
+
+            const tpl = appointmentRescheduledTemplate({
+                patientName: existing.patient.fullName,
+                doctorName:  existing.doctor.name,
+                oldDate,
+                newDate,
+            })
+
+            await Promise.all([
+                sendSMS(existing.patient.phone, tpl.sms),
+                sendEmail({ to: existing.patient.email, ...tpl.email }),
+            ])
+        }
+
+        else {
+            return NextResponse.json({ error: "Invalid action" }, { status: 400 })
+        }
+
+        const updated = await prisma.appointment.update({
+            where: { id },
+            data: updateData,
+            include: {
+                patient: { select: { fullName: true, email: true, phone: true } },
+                doctor:  { select: { name: true, specialty: true, email: true } },
+            },
+        })
+
+        return NextResponse.json(updated)
+    } catch (error: any) {
+        return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+}
+
+export async function DELETE(
+    _req: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params
+        await prisma.appointment.delete({ where: { id } })
+        return NextResponse.json({ success: true })
+    } catch (error: any) {
+        return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+}
