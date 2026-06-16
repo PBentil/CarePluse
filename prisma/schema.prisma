@@ -13,26 +13,37 @@ model Patient {
   fullName              String
   email                 String
   phone                 String
-  dateOfBirth           DateTime?     
-  gender                String?         
-  address               String?        
-  occupation            String?   
+  dateOfBirth           DateTime?
+  gender                String?
+  address               String?
+  occupation            String?
   emergencyContactName    String?
-  emergencyContactNumber  String?     
-  primaryPhysician       String?        
-  insuranceProvider      String?       
-  insurancePolicyNumber  String?         
-  allergies             String?         
-  currentMedication     String?         
-  identificationType    String?         
-  identificationNumber  String?         
-  consentTerms          Boolean?       
-  consentPrivacy        Boolean?        
-  consentTreatment      Boolean?        
+  emergencyContactNumber  String?
+  primaryPhysicianId    String?
+  primaryPhysician      Doctor?  @relation(fields: [primaryPhysicianId], references: [id], onDelete: SetNull)
+  insuranceProvider      String?
+  insurancePolicyNumber  String?
+  allergies             String?
+  currentMedication     String?
+  identificationType    String?
+  identificationNumber  String?
+  consentTerms          Boolean?
+  consentPrivacy        Boolean?
+  consentTreatment      Boolean?
   createdAt             DateTime @default(now())
-    appointments Appointment[]
+  appointments          Appointment[]
 }
 
+model Doctor {
+  id           String    @id @default(uuid())
+  name         String
+  specialty    String?
+  email        String    @unique
+  password     String
+  createdAt    DateTime  @default(now())
+  appointments Appointment[]
+  patients     Patient[]
+}
 model Appointment {
   id        String   @id @default(uuid())
   patientId String
@@ -48,15 +59,6 @@ model Appointment {
   patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
   doctor    Doctor   @relation(fields: [doctorId],  references: [id], onDelete: Cascade)
 }
-model Doctor {
-  id        String   @id @default(uuid())
-  name      String
-  specialty String?
-  email   String @unique
-  createdAt DateTime @default(now())
-  appointments Appointment[]
-}
-
 model Admin {
   id        String   @id @default(uuid())
   email     String   @unique

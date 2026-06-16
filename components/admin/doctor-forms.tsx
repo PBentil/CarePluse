@@ -3,105 +3,126 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { toast } from "sonner"
-import { Loader2 } from "lucide-react"
-import { useEffect } from "react"
-import type { Doctor } from "@/types"
+import { toast, Toaster } from "@/components/ui/sonner"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { CustomFormField } from "@/components/customFormField"
+import { SubmitButton } from "@/components/submitButton"
+import { Logo } from "@/components/logo"
+import { Stethoscope } from "lucide-react"
 
-const schema = z.object({
-    name:           z.string().min(2, "Name is required"),
-    specialty: z.string().min(2, "Specialization is required"),
-    email:          z.string().email("Enter a valid email"),
+const formSchema = z.object({
+    email:    z.string().email("Enter a valid email"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
 })
 
-type FormValues = z.infer<typeof schema>
+type LoginFormType = z.infer<typeof formSchema>
 
-const inputClass = "w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2.5 text-sm text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-white focus:border-transparent transition-all"
-const labelClass = "block text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mb-1.5"
-
-const specializations = [
-    "General Practitioner", "Cardiologist", "Dermatologist",
-    "Neurologist", "Pediatrician", "Psychiatrist",
-    "Orthopedic Surgeon", "Gynecologist", "Oncologist", "Radiologist",
-]
-
-interface DoctorFormProps {
-    doctor?: Doctor
-    onSuccess: () => void
-}
-
-export function DoctorForm({ doctor, onSuccess }: DoctorFormProps) {
-    const isEdit = !!doctor
+export default function DoctorLoginPage() {
+    const router = useRouter()
+    const [loading, setLoading] = useState(false)
 
     const {
         register,
         handleSubmit,
-        reset,
-        formState: { errors, isSubmitting },
-    } = useForm<FormValues>({ resolver: zodResolver(schema) })
+        formState: { errors },
+    } = useForm<LoginFormType>({
+        resolver: zodResolver(formSchema),
+    })
 
-    useEffect(() => {
-        if (doctor) {
-            reset({ name: doctor.name, specialization: doctor.specialty, email: doctor.email })
-        }
-    }, [doctor, reset])
-
-    const onSubmit = async (data: FormValues) => {
+    const onSubmit = async (data: LoginFormType) => {
         try {
-            const url    = isEdit ? `/api/admin/doctors/${doctor.id}` : "/api/admin/doctors"
-            const method = isEdit ? "PATCH" : "POST"
+            setLoading(true)
 
-            const res = await fetch(url, {
-                method,
+            const response = await fetch("/api/doctor/login", {
+                method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
             })
 
-            if (!res.ok) throw new Error(`Failed to ${isEdit ? "update" : "add"} doctor`)
+            const result = await response.json()
 
-            toast.success(`Doctor ${isEdit ? "updated" : "added"} successfully`)
-            if (!isEdit) reset()
-            onSuccess()
+            if (!response.ok) throw new Error(result.error || "Login failed")
+
+            toast.success(`Welcome back, ${result.doctor.name}`)
+            router.push("/doctor/dashboard")
         } catch (error: any) {
             toast.error(error.message || "Something went wrong")
+        } finally {
+            setLoading(false)
         }
     }
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <>
+            <Toaster />
 
-            <div>
-                <label className={labelClass}>Full Name</label>
-                <input {...register("name")} placeholder="Dr. Kwame Mensah" className={inputClass} />
-                {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>}
+            <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col">
+
+                <header className="px-8 py-5 border-b border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-950">
+                    <Logo />
+                </header>
+
+                <div className="flex flex-1 items-center justify-center px-4">
+                    <div className="w-full max-w-sm space-y-6">
+                        <div className="text-center space-y-3">
+                            <div className="flex justify-center">
+                                <div className="h-12 w-12 rounded-2xl bg-primary dark:bg-white flex items-center justify-center">
+                                    <Stethoscope className="h-6 w-6 text-white dark:text-zinc-900" />
+                                </div>
+                            </div>
+                            <div>
+                                <h1 className="text-xl font-semibold text-primary dark:text-white">
+                                    Doctor Portal
+                                </h1>
+                                <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+                                    Sign in to manage your appointments
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-100 dark:border-zinc-800 p-6 space-y-4">
+                            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+
+                                <CustomFormField
+                                    label="Email"
+                                    name="email"
+                                    type="email"
+                                    placeholder="dr.mensah@carepulse.com"
+                                    register={register}
+                                    error={errors.email?.message}
+                                />
+
+                                <CustomFormField
+                                    label="Password"
+                                    name="password"
+                                    type="password"
+                                    placeholder="••••••••"
+                                    register={register}
+                                    error={errors.password?.message}
+                                />
+
+                                <div className="pt-1">
+                                    <SubmitButton isLoading={loading} loadingText="Signing in...">
+                                        Sign In
+                                    </SubmitButton>
+                                </div>
+
+                            </form>
+                        </div>
+
+                        <p className="text-center text-xs text-zinc-400 dark:text-zinc-600">
+                            Restricted access — authorised personnel only.
+                        </p>
+
+                    </div>
+                </div>
+
+                <footer className="px-8 py-5 border-t border-zinc-100 dark:border-zinc-800 text-center text-xs text-zinc-400 dark:text-zinc-500">
+                    © {new Date().getFullYear()} CarePulse
+                </footer>
+
             </div>
-
-            <div>
-                <label className={labelClass}>Specialization</label>
-                <select {...register("specialty")} className={inputClass}>
-                    <option value="">Select specialization</option>
-                    {specializations.map((s) => <option key={s} value={s}>{s}</option>)}
-                </select>
-                {errors.specialty && <p className="mt-1 text-xs text-red-500">{errors.specialty.message}</p>}
-            </div>
-
-            <div>
-                <label className={labelClass}>Email</label>
-                <input {...register("email")} type="email" placeholder="dr.mensah@carepulse.com" className={inputClass} />
-                {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>}
-            </div>
-
-            <div className="pt-2">
-                <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary dark:bg-white text-white dark:text-zinc-900 text-sm font-medium hover:bg-zinc-700 dark:hover:bg-zinc-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                    {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-                    {isSubmitting ? "Saving..." : isEdit ? "Save Changes" : "Add Doctor"}
-                </button>
-            </div>
-
-        </form>
+        </>
     )
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import bcrypt from "bcrypt"
 
 export async function GET(req: NextRequest) {
     try {
@@ -44,15 +45,23 @@ export async function POST(req: NextRequest) {
     try {
         const body = await req.json()
 
+        if (!body.password) {
+            return NextResponse.json({ error: "Password is required" }, { status: 400 })
+        }
+
+        const hashedPassword = await bcrypt.hash(body.password, 10)
+
         const doctor = await prisma.doctor.create({
             data: {
                 name:      body.name,
                 specialty: body.specialty,
                 email:     body.email,
+                password:  hashedPassword,
             },
         })
 
-        return NextResponse.json(doctor, { status: 201 })
+        const { password: _, ...doctorSafe } = doctor
+        return NextResponse.json(doctorSafe, { status: 201 })
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 })
     }

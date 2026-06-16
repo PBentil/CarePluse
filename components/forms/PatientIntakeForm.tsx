@@ -186,12 +186,13 @@ export default function PatientIntakeForm({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <FieldLabel>Primary Care Physician</FieldLabel>
-              <select {...register("primaryCarePhysician")} className={selectClass}>
+              <select {...register("primaryPhysicianId")} className={selectClass}>
                 <option value="">Select doctor</option>
-                {doctors.map((d) => <option key={d.id} value={d.name}>{d.name}</option>)}
-
+                {doctors.map((d) => (
+                    <option key={d.id} value={d.id}>{d.name}</option>
+                ))}
               </select>
-              <FieldError message={errors.primaryCarePhysician?.message} />
+              <FieldError message={errors.primaryPhysicianId?.message} />
             </div>
 
             <CustomFormField
