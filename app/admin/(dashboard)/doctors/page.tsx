@@ -9,7 +9,6 @@ import {Column, DataTable} from "@/components/admin/data-table";
 import {RowActions} from "@/components/admin/row-actions";
 import {PageHeader} from "@/components/admin/page-header";
 import {Modal} from "@/components/admin/modal";
-import {DoctorForm} from "@/components/admin/doctor-forms";
 import {ConfirmModal} from "@/components/admin/confirm-modal";
 
 const PAGE_SIZE = 10
