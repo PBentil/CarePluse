@@ -45,16 +45,18 @@ model Doctor {
   patients     Patient[]
 }
 model Appointment {
-  id        String   @id @default(uuid())
-  patientId String
-  doctorId  String
-  date      DateTime
-  reason    String
-  notes     String?
-  status    String   @default("pending")
+  id                String    @id @default(uuid())
+  patientId         String
+  doctorId          String
+  date              DateTime
+  reason            String
+  notes             String?
+  status            String    @default("pending")
   rejectionReason   String?
   rescheduledDate   DateTime?
-  createdAt DateTime @default(now())
+  videoRoomUrl      String?
+  videoRoomName     String?
+  createdAt         DateTime  @default(now())
 
   patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
   doctor    Doctor   @relation(fields: [doctorId],  references: [id], onDelete: Cascade)

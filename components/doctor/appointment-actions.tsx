@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
-import { Loader2, CheckCircle2, XCircle, CalendarClock } from "lucide-react"
+import { Loader2, CheckCircle2, XCircle, CalendarClock, Video } from "lucide-react"
 import type { Appointment } from "@/types"
 import { Modal } from "@/components/admin/modal"
 
@@ -43,7 +43,7 @@ export function DoctorAppointmentActions({ appointment, onSuccess }: Appointment
             if (!res.ok) throw new Error("Action failed")
 
             const messages = {
-                confirm:    "Appointment confirmed — patient notified",
+                confirm:    "Appointment confirmed — patient notified with video link",
                 reject:     "Appointment rejected — patient notified",
                 reschedule: "Appointment rescheduled — patient notified",
             }
@@ -66,6 +66,20 @@ export function DoctorAppointmentActions({ appointment, onSuccess }: Appointment
     return (
         <>
             <div className="flex items-center gap-1">
+
+                {isConfirmed && appointment.videoRoomName && (
+
+                    <a
+                        href={`/call/${appointment.videoRoomName}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Join video call"
+                        className="h-8 w-8 rounded-lg flex items-center justify-center text-zinc-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950 transition-colors"
+                    >
+                        <Video className="h-3.5 w-3.5" />
+                    </a>
+                )}
+
                 {(isPending || isConfirmed) && (
                     <button
                         onClick={() => setAction("reschedule")}
@@ -75,6 +89,7 @@ export function DoctorAppointmentActions({ appointment, onSuccess }: Appointment
                         <CalendarClock className="h-3.5 w-3.5" />
                     </button>
                 )}
+
                 {isPending && (
                     <>
                         <button
@@ -93,6 +108,7 @@ export function DoctorAppointmentActions({ appointment, onSuccess }: Appointment
                         </button>
                     </>
                 )}
+
             </div>
 
             <Modal open={action === "confirm"} onClose={() => setAction(null)} title="Confirm Appointment" size="sm">
@@ -107,16 +123,19 @@ export function DoctorAppointmentActions({ appointment, onSuccess }: Appointment
                             })}
                         </p>
                     </div>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                        The patient will be notified via SMS and email once confirmed.
-                    </p>
+                    <div className="rounded-xl bg-blue-50 dark:bg-blue-950 border border-blue-100 dark:border-blue-900 p-4 flex items-start gap-3">
+                        <Video className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
+                        <p className="text-xs text-blue-700 dark:text-blue-300">
+                            A video room will be created automatically and the patient will receive the link via SMS and email.
+                        </p>
+                    </div>
                     <div className="flex gap-2">
                         <button onClick={() => setAction(null)} className="flex-1 px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 text-sm text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
                             Cancel
                         </button>
                         <button onClick={handleSubmit} disabled={loading} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium disabled:opacity-50 transition-colors">
                             {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                            Confirm
+                            Confirm & create room
                         </button>
                     </div>
                 </div>

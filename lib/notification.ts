@@ -125,3 +125,33 @@ export function appointmentRescheduledTemplate(data: {
         },
     }
 }
+
+export function appointmentConfirmedWithVideoTemplate(data: {
+    patientName: string
+    doctorName: string
+    date: string
+    videoUrl: string
+}) {
+    return {
+        sms: `Hi ${data.patientName}, your appointment with ${data.doctorName} on ${data.date} is confirmed. Join your video call here: ${data.videoUrl} – CarePulse`,
+        email: {
+            subject: "Appointment Confirmed – Join Your Video Call",
+            html: `
+        <div style="font-family:sans-serif;max-width:480px;margin:auto;padding:32px;">
+          <h2 style="color:#18181b;font-size:18px;">Appointment Confirmed ✓</h2>
+          <p style="color:#71717a;">Hi <strong>${data.patientName}</strong>,</p>
+          <p style="color:#71717a;">Your appointment has been confirmed:</p>
+          <div style="background:#f4f4f5;border-radius:12px;padding:16px;margin:16px 0;">
+            <p style="margin:4px 0;color:#18181b;"><strong>Doctor:</strong> ${data.doctorName}</p>
+            <p style="margin:4px 0;color:#18181b;"><strong>Date:</strong> ${data.date}</p>
+          </div>
+          <a href="${data.videoUrl}" style="display:inline-block;margin-top:8px;padding:12px 24px;background:#18181b;color:#fff;border-radius:10px;text-decoration:none;font-size:14px;font-weight:500;">
+            Join Video Call
+          </a>
+          <p style="color:#71717a;font-size:13px;margin-top:16px;">You can also copy this link: <a href="${data.videoUrl}" style="color:#18181b;">${data.videoUrl}</a></p>
+          <p style="color:#a1a1aa;font-size:12px;margin-top:32px;">CarePulse – Your health, our priority.</p>
+        </div>
+      `,
+        },
+    }
+}

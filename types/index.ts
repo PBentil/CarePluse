@@ -27,6 +27,8 @@
      status: AppointmentStatus
      rejectionReason?: string
      rescheduledDate?: string
+     videoRoomUrl?: string
+     videoRoomName?: string
      createdAt: string
      patient: { fullName: string; email: string; phone: string }
      doctor:  { name: string; specialty: string; email: string }
