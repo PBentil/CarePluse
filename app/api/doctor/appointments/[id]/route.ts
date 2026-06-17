@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import {
-    appointmentConfirmedTemplate,
+    appointmentConfirmedWithVideoTemplate,
     appointmentRejectedTemplate,
     appointmentRescheduledTemplate,
     sendEmail,
     sendSMS,
 } from "@/lib/notification"
+import { createVideoRoom } from "@/lib/daily"
 
 export async function PATCH(
     req: NextRequest,
@@ -41,16 +42,19 @@ export async function PATCH(
         let updateData: any = {}
 
         if (action === "confirm") {
-            updateData = { status: "confirmed" }
+            const { url: videoRoomUrl, name: videoRoomName } = await createVideoRoom(id)
+
+            updateData = { status: "confirmed", videoRoomUrl, videoRoomName }
 
             const formatted = new Date(existing.date).toLocaleDateString("en-GB", {
                 weekday: "long", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit",
             })
 
-            const tpl = appointmentConfirmedTemplate({
+            const tpl = appointmentConfirmedWithVideoTemplate({
                 patientName: existing.patient.fullName,
                 doctorName:  existing.doctor.name,
                 date:        formatted,
+                videoUrl:    videoRoomUrl,
             })
 
             await Promise.all([

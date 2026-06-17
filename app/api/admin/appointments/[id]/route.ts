@@ -1,21 +1,26 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import {
-    appointmentConfirmedTemplate,
+    appointmentConfirmedWithVideoTemplate,
     appointmentRejectedTemplate,
     appointmentRescheduledTemplate,
     sendEmail,
-    sendSMS
-} from "@/lib/notification";
-
+    sendSMS,
+} from "@/lib/notification"
+import { createVideoRoom } from "@/lib/daily"
 
 export async function PATCH(
     req: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const doctorId = req.cookies.get("doctor")?.value
+        if (!doctorId) {
+            return NextResponse.json({ error: "Unauthorised" }, { status: 401 })
+        }
+
         const { id } = await params
-        const body   = await req.json()
+        const body = await req.json()
         const { action, rejectionReason, rescheduledDate } = body
 
         const existing = await prisma.appointment.findUnique({
@@ -30,19 +35,26 @@ export async function PATCH(
             return NextResponse.json({ error: "Appointment not found" }, { status: 404 })
         }
 
+        if (existing.doctorId !== doctorId) {
+            return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+        }
+
         let updateData: any = {}
 
         if (action === "confirm") {
-            updateData = { status: "confirmed" }
+            const { url: videoRoomUrl, name: videoRoomName } = await createVideoRoom(id)
+
+            updateData = { status: "confirmed", videoRoomUrl, videoRoomName }
 
             const formatted = new Date(existing.date).toLocaleDateString("en-GB", {
                 weekday: "long", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit",
             })
 
-            const tpl = appointmentConfirmedTemplate({
+            const tpl = appointmentConfirmedWithVideoTemplate({
                 patientName: existing.patient.fullName,
                 doctorName:  existing.doctor.name,
                 date:        formatted,
+                videoUrl:    videoRoomUrl,
             })
 
             await Promise.all([
@@ -109,19 +121,6 @@ export async function PATCH(
         })
 
         return NextResponse.json(updated)
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 })
-    }
-}
-
-export async function DELETE(
-    _req: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
-) {
-    try {
-        const { id } = await params
-        await prisma.appointment.delete({ where: { id } })
-        return NextResponse.json({ success: true })
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 })
     }
