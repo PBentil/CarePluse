@@ -103,7 +103,7 @@ export default function DoctorLoginPage() {
                                 />
 
                                 <div className="pt-1">
-                                    <SubmitButton isLoading={loading} loadingText="Signing in...">
+                                    <SubmitButton  isLoading={loading} loadingText="Signing in...">
                                         Sign In
                                     </SubmitButton>
                                 </div>
