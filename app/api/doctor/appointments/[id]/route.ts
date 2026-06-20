@@ -107,6 +107,17 @@ export async function PATCH(
             ])
         }
 
+
+        else if (action === "notes") {
+            if (!body.notes) {
+                return NextResponse.json({ error: "Notes are required" }, { status: 400 })
+            }
+            updateData = {
+                notes:           body.notes,
+                diagnosis:       body.diagnosis ?? null,
+                requiresLabTest: body.requiresLabTest ?? false,
+            }
+        }
         else {
             return NextResponse.json({ error: "Invalid action" }, { status: 400 })
         }
