@@ -52,6 +52,8 @@ model Appointment {
   date              DateTime
   reason            String
   notes             String?
+  diagnosis         String?
+  requiresLabTest   Boolean   @default(false)
   status            String    @default("pending")
   rejectionReason   String?
   rescheduledDate   DateTime?

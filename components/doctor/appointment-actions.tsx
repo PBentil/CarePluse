@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { toast } from "sonner"
 import { Loader2, CheckCircle2, XCircle, CalendarClock, Video } from "lucide-react"
+import { ConsultationNotes } from "@/components/doctor/consultation-notes"
 import type { Appointment } from "@/types"
 import { Modal } from "@/components/admin/modal"
 
@@ -66,6 +67,13 @@ export function DoctorAppointmentActions({ appointment, onSuccess }: Appointment
     return (
         <>
             <div className="flex items-center gap-1">
+
+                {isConfirmed && (
+                    <ConsultationNotes
+                        appointment={appointment}
+                        onSuccess={onSuccess}
+                    />
+                )}
 
                 {isConfirmed && appointment.videoRoomName && (
 

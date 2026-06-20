@@ -2,6 +2,12 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { patientIntakeSchema } from "@/lib/validation"
+import type * as z from "zod"
+type FormValues = z.infer<typeof patientIntakeSchema>
+import type { z } from "zod"
+type FormValues = z.infer<typeof patientIntakeSchema>
+import type { z } from "zod"
+type FormValues = z.infer<typeof patientIntakeSchema>
 import { CustomFormField } from "../customFormField"
 import { SubmitButton } from "../submitButton"
 import { toast } from "sonner"
@@ -66,7 +72,7 @@ export default function PatientIntakeForm({
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm({
+  } = useForm<FormValues>({
     resolver: zodResolver(patientIntakeSchema),
     defaultValues: {
       fullName: defaultValues?.fullName || "",
@@ -75,7 +81,7 @@ export default function PatientIntakeForm({
     },
   })
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: FormValues) => {
     try {
       if (!patientId) {
         toast.error("Patient ID missing")
