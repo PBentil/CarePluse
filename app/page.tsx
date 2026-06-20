@@ -30,12 +30,26 @@ export default function Home() {
 
         <footer className="px-8 py-5 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-sm text-zinc-400 dark:text-zinc-500">
           <p>© {new Date().getFullYear()} CarePulse</p>
-          <Link
-            href="/admin/login"
-            className="text-primary hover:text-zinc-900 hover:underline dark:hover:text-white transition-colors"
-          >
-            Admin portal →
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link
+                href="/patient/login"
+                className="text-primary hover:text-zinc-900 dark:hover:text-white transition-colors"
+            >
+              Patient portal →
+            </Link>
+            <Link
+                href="/doctor/login"
+                className="text-primary hover:text-zinc-900 dark:hover:text-white transition-colors"
+            >
+              Doctor portal →
+            </Link>
+            <Link
+                href="/admin/login"
+                className="text-primary hover:text-zinc-900 dark:hover:text-white transition-colors"
+            >
+              Admin portal →
+            </Link>
+          </div>
         </footer>
 
       </section>

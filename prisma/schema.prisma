@@ -31,6 +31,7 @@ model Patient {
   consentPrivacy        Boolean?
   consentTreatment      Boolean?
   createdAt             DateTime @default(now())
+    otps         PatientOTP[]
   appointments          Appointment[]
 }
 
@@ -66,4 +67,15 @@ model Admin {
   email     String   @unique
   password  String
   createdAt DateTime @default(now())
+}
+
+model PatientOTP {
+  id        String   @id @default(uuid())
+  patientId String
+  code      String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
 }
