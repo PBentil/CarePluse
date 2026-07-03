@@ -8,6 +8,7 @@ const titles: Record<string, string> = {
     "/doctor/dashboard":    "Dashboard",
     "/doctor/appointments": "Appointments",
     "/doctor/patients":     "My Patients",
+    "/doctor/lab-tests":    "Lab Tests",
 }
 
 export function DoctorHeader() {

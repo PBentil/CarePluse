@@ -33,6 +33,7 @@ model Patient {
   createdAt             DateTime @default(now())
     otps         PatientOTP[]
   appointments          Appointment[]
+    labTests     LabTest[]
 }
 
 model Doctor {
@@ -44,6 +45,8 @@ model Doctor {
   createdAt    DateTime  @default(now())
   appointments Appointment[]
   patients     Patient[]
+    labTests     LabTest[]
+
 }
 model Appointment {
   id                String    @id @default(uuid())
@@ -63,6 +66,8 @@ model Appointment {
 
   patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
   doctor    Doctor   @relation(fields: [doctorId],  references: [id], onDelete: Cascade)
+    labTests     LabTest[]
+
 }
 model Admin {
   id        String   @id @default(uuid())
@@ -80,4 +85,21 @@ model PatientOTP {
   createdAt DateTime @default(now())
 
   patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+model LabTest {
+  id            String    @id @default(uuid())
+  appointmentId String
+  patientId     String
+  doctorId      String
+  testName      String
+  status        String    @default("ordered")
+  resultUrl     String?
+  resultNotes   String?
+  orderedAt     DateTime  @default(now())
+  completedAt   DateTime?
+
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  patient       Patient     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor        Doctor      @relation(fields: [doctorId],    references: [id], onDelete: Cascade)
 }

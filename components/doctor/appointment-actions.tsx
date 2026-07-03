@@ -4,6 +4,7 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { Loader2, CheckCircle2, XCircle, CalendarClock, Video } from "lucide-react"
 import { ConsultationNotes } from "@/components/doctor/consultation-notes"
+import { OrderLabTests } from "@/components/doctor/order-lab-tests"
 import type { Appointment } from "@/types"
 import { Modal } from "@/components/admin/modal"
 
@@ -71,6 +72,15 @@ export function DoctorAppointmentActions({ appointment, onSuccess }: Appointment
                 {isConfirmed && (
                     <ConsultationNotes
                         appointment={appointment}
+                        onSuccess={onSuccess}
+                    />
+                )}
+
+                {isConfirmed && (
+                    <OrderLabTests
+                        appointmentId={appointment.id}
+                        patientId={appointment.patientId}
+                        patientName={appointment.patient.fullName}
                         onSuccess={onSuccess}
                     />
                 )}
