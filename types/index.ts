@@ -33,3 +33,20 @@
      patient: { fullName: string; email: string; phone: string }
      doctor:  { name: string; specialty: string; email: string }
  }
+export type LabTestStatus = "ordered" | "processing" | "completed"
+
+export interface LabTest {
+    id:            string
+    appointmentId: string
+    patientId:     string
+    doctorId:      string
+    testName:      string
+    status:        LabTestStatus
+    resultUrl?:    string
+    resultNotes?:  string
+    orderedAt:     string
+    completedAt?:  string
+    patient?:      { fullName: string; email: string; phone: string }
+    doctor?:       { name: string; specialty: string }
+    appointment?:  { date: string; reason: string }
+}

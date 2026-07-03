@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 const titles: Record<string, string> = {
     "/patient/dashboard":    "Dashboard",
     "/patient/appointments": "My Appointments",
+    "/patient/lab-tests":     "My Lab Tests",
 }
 
 export function PatientHeader() {
