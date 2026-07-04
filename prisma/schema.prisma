@@ -34,6 +34,8 @@ model Patient {
     otps         PatientOTP[]
   appointments          Appointment[]
     labTests     LabTest[]
+      prescriptions Prescription[]
+
 }
 
 model Doctor {
@@ -46,6 +48,8 @@ model Doctor {
   appointments Appointment[]
   patients     Patient[]
     labTests     LabTest[]
+      prescriptions Prescription[]
+
 
 }
 model Appointment {
@@ -67,7 +71,7 @@ model Appointment {
   patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
   doctor    Doctor   @relation(fields: [doctorId],  references: [id], onDelete: Cascade)
     labTests     LabTest[]
-
+      prescriptions Prescription[]
 }
 model Admin {
   id        String   @id @default(uuid())
@@ -102,4 +106,44 @@ model LabTest {
   appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
   patient       Patient     @relation(fields: [patientId], references: [id], onDelete: Cascade)
   doctor        Doctor      @relation(fields: [doctorId],    references: [id], onDelete: Cascade)
+}
+
+model Prescription {
+  id            String   @id @default(uuid())
+  appointmentId String
+  patientId     String
+  doctorId      String
+  diagnosis     String?
+  notes         String?
+  status        String   @default("pending")
+  createdAt     DateTime @default(now())
+
+  appointment   Appointment        @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  patient       Patient            @relation(fields: [patientId],     references: [id], onDelete: Cascade)
+  doctor        Doctor             @relation(fields: [doctorId],      references: [id], onDelete: Cascade)
+  items         PrescriptionItem[]
+}
+
+model PrescriptionItem {
+  id             String       @id @default(uuid())
+  prescriptionId String
+  drugName       String
+  dosage         String
+  frequency      String
+  duration       String
+  price          Float        @default(0)
+  notes          String?
+
+  prescription   Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+}
+
+model Drug {
+  id          String   @id @default(uuid())
+  name        String
+  genericName String?
+  category    String?
+  unit        String   @default("tablet")
+  price       Float
+  inStock     Boolean  @default(true)
+  createdAt   DateTime @default(now())
 }

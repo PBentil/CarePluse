@@ -50,3 +50,42 @@ export interface LabTest {
     doctor?:       { name: string; specialty: string }
     appointment?:  { date: string; reason: string }
 }
+
+export type PrescriptionStatus = "pending" | "paid" | "dispensed"
+
+export interface PrescriptionItem {
+    id:             string
+    prescriptionId: string
+    drugName:       string
+    dosage:         string
+    frequency:      string
+    duration:       string
+    price:          number
+    notes?:         string
+}
+
+export interface Prescription {
+    id:            string
+    appointmentId: string
+    patientId:     string
+    doctorId:      string
+    diagnosis?:    string
+    notes?:        string
+    status:        PrescriptionStatus
+    createdAt:     string
+    items:         PrescriptionItem[]
+    patient?:      { fullName: string; email: string; phone: string }
+    doctor?:       { name: string; specialty: string }
+    appointment?:  { date: string; reason: string }
+}
+
+export interface Drug {
+    id:          string
+    name:        string
+    genericName?: string
+    category?:   string
+    unit:        string
+    price:       number
+    inStock:     boolean
+    createdAt:   string
+}
