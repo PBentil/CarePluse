@@ -5,6 +5,7 @@ import { toast } from "sonner"
 import { Loader2, CheckCircle2, XCircle, CalendarClock, Video } from "lucide-react"
 import { ConsultationNotes } from "@/components/doctor/consultation-notes"
 import { OrderLabTests } from "@/components/doctor/order-lab-tests"
+import { IssuePrescription } from "@/components/doctor/issue-prescription"
 import type { Appointment } from "@/types"
 import { Modal } from "@/components/admin/modal"
 
@@ -81,6 +82,16 @@ export function DoctorAppointmentActions({ appointment, onSuccess }: Appointment
                         appointmentId={appointment.id}
                         patientId={appointment.patientId}
                         patientName={appointment.patient.fullName}
+                        onSuccess={onSuccess}
+                    />
+                )}
+
+                {isConfirmed && (
+                    <IssuePrescription
+                        appointmentId={appointment.id}
+                        patientId={appointment.patientId}
+                        patientName={appointment.patient.fullName}
+                        diagnosis={appointment.diagnosis}
                         onSuccess={onSuccess}
                     />
                 )}
