@@ -26,7 +26,10 @@ export async function POST(req: Request) {
 
     response.cookies.set("doctor", doctor.id, {
         httpOnly: true,
-        path: "/",
+        secure:   process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path:     "/",
+        maxAge:   60 * 60 * 24 * 7,
     })
 
     return response
