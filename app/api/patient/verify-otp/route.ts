@@ -34,8 +34,20 @@ export async function POST(req: NextRequest) {
 
         const response = NextResponse.json({ message: "Login successful", patient })
 
-        response.cookies.set("patient", patientId, { httpOnly: true, path: "/" })
-        response.cookies.set("patientName", patient!.fullName, { httpOnly: false, path: "/" })
+        response.cookies.set("patient", patientId, {
+        httpOnly: true,
+        secure:   process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path:     "/",
+        maxAge:   60 * 60 * 24 * 7,
+    })
+        response.cookies.set("patientName", patient!.fullName, {
+        httpOnly: false,
+        secure:   process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path:     "/",
+        maxAge:   60 * 60 * 24 * 7,
+    })
 
         return response
     } catch (error: any) {

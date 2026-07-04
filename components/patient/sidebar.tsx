@@ -17,10 +17,10 @@ export function PatientSidebar() {
     const pathname = usePathname()
     const router   = useRouter()
 
-    const handleLogout = () => {
-        document.cookie = "patient=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
-        document.cookie = "patientName=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+    const handleLogout = async () => {
+        await fetch("/api/patient/logout", { method: "POST" })
         router.push("/patient/login")
+        router.refresh()
     }
 
     return (
