@@ -89,3 +89,19 @@ export interface Drug {
     inStock:     boolean
     createdAt:   string
 }
+
+export type OrderStatus = "packed" | "on_the_way" | "delivered"
+
+export interface Order {
+    id:              string
+    prescriptionId:  string
+    patientId:       string
+    deliveryAddress: string
+    status:          OrderStatus
+    totalAmount:     number
+    paystackRef?:    string
+    createdAt:       string
+    updatedAt:       string
+    prescription?:   Prescription
+    patient?:        { fullName: string; email: string; phone: string }
+}
