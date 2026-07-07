@@ -1,8 +1,7 @@
-"use client"
 
+"use client"
 import * as React from "react"
 import { ThemeProvider as NextThemesProvider } from "next-themes"
-
 export function ThemeProvider({
   children,
   ...props
@@ -10,8 +9,8 @@ export function ThemeProvider({
   return (
     <NextThemesProvider
       attribute="class"
-      defaultTheme="system"
-      enableSystem
+      defaultTheme="light"
+      enableSystem={false}
       disableTransitionOnChange
       {...props}
     >
