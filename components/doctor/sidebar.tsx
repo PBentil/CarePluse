@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { Logo } from "@/components/logo"
-import { LayoutDashboard, Calendar, Users, FlaskConical, Pill, LogOut } from "lucide-react"
+import { LayoutDashboard, Calendar, Users, FlaskConical, Pill, Clock, LogOut } from "lucide-react"
 
 const navItems = [
     { label: "Dashboard",    href: "/doctor/dashboard",    icon: LayoutDashboard },
@@ -11,6 +11,7 @@ const navItems = [
     { label: "Patients",     href: "/doctor/patients",     icon: Users },
     { label: "Lab Tests",      href: "/doctor/lab-tests",      icon: FlaskConical },
     { label: "Prescriptions",  href: "/doctor/prescriptions",  icon: Pill },
+    { label: "Availability",   href: "/doctor/availability",   icon: Clock },
 ]
 
 export function DoctorSidebar() {
