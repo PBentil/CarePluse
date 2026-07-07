@@ -3,60 +3,71 @@ import type { NextRequest } from "next/server"
 
 export function proxy(req: NextRequest) {
     const { pathname } = req.nextUrl
-    const isAdmin   = req.cookies.get("admin")?.value
-    const doctorId  = req.cookies.get("doctor")?.value
-    const patientId = req.cookies.get("patient")?.value
 
-    // Public routes - always allow
-    const publicPaths = [
-        "/admin/login",
-        "/doctor/login",
-        "/patient/login",
-        "/api/admin/login",
-        "/api/doctor/login",
-        "/api/patient/send-otp",
-        "/api/patient/verify-otp",
-    ]
+    // Super admin
+    if (pathname.startsWith("/superadmin")) {
+        if (pathname === "/superadmin/login") return NextResponse.next()
+        const superadmin = req.cookies.get("superadmin")?.value
+        if (!superadmin) return NextResponse.redirect(new URL("/superadmin/login", req.url))
+        return NextResponse.next()
+    }
 
+    // Public paths
+    const publicPaths = ["/register", "/", "/api/hospitals", "/api/auth"]
     if (publicPaths.some(p => pathname === p || pathname.startsWith(p))) {
         return NextResponse.next()
     }
 
-    // Protect admin pages and API
-    if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
-        if (!isAdmin) {
-            if (pathname.startsWith("/api/")) {
-                return NextResponse.json({ error: "Unauthorised" }, { status: 401 })
-            }
-            return NextResponse.redirect(new URL("/admin/login", req.url))
+    // Slug-based routes: /[slug]/admin, /[slug]/doctor, /[slug]/patient, /[slug]/staff
+    const slugMatch = pathname.match(/^\/([a-z0-9-]+)\/(admin|doctor|patient|staff)(\/.*)?$/)
+    if (slugMatch) {
+        const slug    = slugMatch[1]
+        const portal  = slugMatch[2]
+        const rest    = slugMatch[3] ?? ""
+
+        // Allow login pages
+        if (rest === "/login" || rest === "/login/") return NextResponse.next()
+
+        if (portal === "admin" || portal === "staff") {
+            const staffId = req.cookies.get(`staff_${slug}`)?.value
+            if (!staffId) return NextResponse.redirect(new URL(`/${slug}/admin/login`, req.url))
         }
+
+        if (portal === "doctor") {
+            const doctorId = req.cookies.get(`doctor_${slug}`)?.value
+            if (!doctorId) return NextResponse.redirect(new URL(`/${slug}/doctor/login`, req.url))
+        }
+
+        if (portal === "patient") {
+            const patientId = req.cookies.get(`patient_${slug}`)?.value
+            if (!patientId) return NextResponse.redirect(new URL(`/${slug}/patient/login`, req.url))
+        }
+
+        return NextResponse.next()
     }
 
-    // Protect doctor pages and API
-    if (pathname.startsWith("/doctor") || pathname.startsWith("/api/doctor")) {
-        if (!doctorId) {
-            if (pathname.startsWith("/api/")) {
-                return NextResponse.json({ error: "Unauthorised" }, { status: 401 })
-            }
-            return NextResponse.redirect(new URL("/doctor/login", req.url))
-        }
-    }
+    // API slug routes
+    const apiSlugMatch = pathname.match(/^\/api\/([a-z0-9-]+)\/(admin|doctor|patient|staff)(\/.*)?$/)
+    if (apiSlugMatch) {
+        const slug   = apiSlugMatch[1]
+        const portal = apiSlugMatch[2]
 
-    // Protect patient pages and API
-    if (pathname.startsWith("/patient") || pathname.startsWith("/api/patient")) {
-        if (!patientId) {
-            if (pathname.startsWith("/api/")) {
-                return NextResponse.json({ error: "Unauthorised" }, { status: 401 })
-            }
-            return NextResponse.redirect(new URL("/patient/login", req.url))
+        if (portal === "admin" || portal === "staff") {
+            const staffId = req.cookies.get(`staff_${slug}`)?.value
+            if (!staffId) return NextResponse.json({ error: "Unauthorised" }, { status: 401 })
         }
-    }
 
-    // Protect call pages
-    if (pathname.startsWith("/call")) {
-        if (!doctorId && !patientId && !isAdmin) {
-            return NextResponse.redirect(new URL("/", req.url))
+        if (portal === "doctor") {
+            const doctorId = req.cookies.get(`doctor_${slug}`)?.value
+            if (!doctorId) return NextResponse.json({ error: "Unauthorised" }, { status: 401 })
         }
+
+        if (portal === "patient") {
+            const patientId = req.cookies.get(`patient_${slug}`)?.value
+            if (!patientId) return NextResponse.json({ error: "Unauthorised" }, { status: 401 })
+        }
+
+        return NextResponse.next()
     }
 
     return NextResponse.next()
@@ -64,12 +75,16 @@ export function proxy(req: NextRequest) {
 
 export const config = {
     matcher: [
-        "/admin/:path*",
-        "/doctor/:path*",
-        "/patient/:path*",
-        "/call/:path*",
-        "/api/admin/:path*",
-        "/api/doctor/:path*",
-        "/api/patient/:path*",
+        "/superadmin/:path*",
+        "/register",
+        "/:slug/admin/:path*",
+        "/:slug/doctor/:path*",
+        "/:slug/patient/:path*",
+        "/:slug/staff/:path*",
+        "/api/:slug/admin/:path*",
+        "/api/:slug/doctor/:path*",
+        "/api/:slug/patient/:path*",
+        "/api/:slug/staff/:path*",
+        "/api/auth/:path*",
     ],
 }

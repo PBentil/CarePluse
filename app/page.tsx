@@ -1,7 +1,8 @@
 import Image from "next/image";
 import { Logo } from "@/components/logo";
 import PatientForm from "@/components/forms/PatientForm";
-import Link from "next/link";
+import Link from "next/link"
+import { ArrowRight } from "lucide-react";
 
 export default function Home() {
   return (
