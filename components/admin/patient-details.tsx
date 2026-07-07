@@ -18,6 +18,7 @@ interface FullPatient extends Patient {
     currentMedication?: string
     identificationType?: string
     identificationNumber?: string
+    identificationDocumentUrl?: string
     consentTreatment?: boolean
     consentPrivacy?: boolean
     consentTerms?: boolean
@@ -146,6 +147,19 @@ export function PatientDetails({ patientId, onClose, onEdit, onDelete }: Patient
                     <Section title="Identification">
                         <Row label="ID Type"   value={patient.identificationType} />
                         <Row label="ID Number" value={patient.identificationNumber} />
+                        {patient.identificationDocumentUrl && (
+                            <div className="flex items-start justify-between px-4 py-3 border-b border-zinc-50 dark:border-zinc-800/50 last:border-0">
+                                <span className="text-xs text-zinc-400 dark:text-zinc-500 shrink-0 w-40">ID Document</span>
+                                
+                                    href={patient.identificationDocumentUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-xs text-primary hover:underline"
+                                >
+                                    View document
+                                </a>
+                            </div>
+                        )}
                     </Section>
 
                     <Section title="Consent & Privacy">
