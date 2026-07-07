@@ -48,10 +48,9 @@ model Doctor {
   createdAt    DateTime  @default(now())
   appointments Appointment[]
   patients     Patient[]
-    labTests     LabTest[]
-      prescriptions Prescription[]
-
-
+  labTests     LabTest[]
+  prescriptions Prescription[]
+  availability  Availability[]
 }
 model Appointment {
   id                String    @id @default(uuid())
@@ -164,4 +163,17 @@ model Order {
 
   prescription   Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
   patient        Patient      @relation(fields: [patientId],      references: [id], onDelete: Cascade)
+}
+
+model Availability {
+  id        String   @id @default(uuid())
+  doctorId  String
+  dayOfWeek Int      // 0 = Sunday, 1 = Monday ... 6 = Saturday
+  startTime String   // "09:00"
+  endTime   String   // "17:00"
+  slotDurationMins Int @default(30)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  doctor    Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
 }
