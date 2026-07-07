@@ -16,8 +16,11 @@ const fontMono = Plus_Jakarta_Sans({
 })
 
 export const metadata: Metadata = {
-  title:       "CarePulse",
-  description: "A healthcare management system",
+  title:       "CarePulse — Digital Healthcare Platform",
+  description: "The complete digital healthcare platform for hospitals across Ghana and Africa.",
+  icons: {
+    icon: "/favicon.svg",
+  },
 }
 
 export default function RootLayout({
