@@ -38,8 +38,16 @@ export default function HospitalAdminLoginPage() {
             })
             const result = await res.json()
             if (!res.ok) throw new Error(result.error || "Login failed")
+
+            const role = result.staff.role
+
             toast.success(`Welcome back, ${result.staff.name}`)
-            router.push(`/${slug}/admin/dashboard`)
+
+            if (role === "hospital_admin") {
+                router.push(`/${slug}/admin/dashboard`)
+            } else {
+                router.push(`/${slug}/staff/dashboard`)
+            }
         } catch (error: unknown) {
             toast.error(error instanceof Error ? error.message : "Something went wrong")
         } finally {
@@ -50,35 +58,36 @@ export default function HospitalAdminLoginPage() {
     return (
         <>
             <Toaster />
-            <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col">
-                <header className="px-8 py-5 border-b border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-950">
+            <div className="min-h-screen bg-zinc-50 flex flex-col">
+                <header className="px-8 py-5 border-b border-zinc-100 bg-white">
                     <Logo />
                 </header>
                 <div className="flex flex-1 items-center justify-center px-4">
                     <div className="w-full max-w-sm space-y-6">
                         <div className="text-center space-y-3">
                             <div className="flex justify-center">
-                                <div className="h-12 w-12 rounded-2xl bg-primary dark:bg-white flex items-center justify-center">
-                                    <ShieldCheck className="h-6 w-6 text-white dark:text-zinc-900" />
+                                <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center">
+                                    <ShieldCheck className="h-6 w-6 text-white" />
                                 </div>
                             </div>
                             <div>
-                                <h1 className="text-xl font-semibold text-primary dark:text-white">Admin Portal</h1>
-                                <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Sign in to manage your hospital</p>
+                                <h1 className="text-xl font-semibold text-primary">Staff Portal</h1>
+                                <p className="text-sm text-zinc-500 mt-1">Sign in to access your dashboard</p>
                             </div>
                         </div>
-                        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-100 dark:border-zinc-800 p-6">
+                        <div className="bg-white rounded-2xl border border-zinc-100 p-6">
                             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                                <CustomFormField label="Email" name="email" type="email" placeholder="admin@hospital.com" register={register} error={errors.email?.message} />
+                                <CustomFormField label="Email" name="email" type="email" placeholder="staff@hospital.com" register={register} error={errors.email?.message} />
                                 <CustomFormField label="Password" name="password" type="password" placeholder="••••••••" register={register} error={errors.password?.message} />
                                 <div className="pt-1">
                                     <SubmitButton isLoading={loading} loadingText="Signing in...">Sign In</SubmitButton>
                                 </div>
                             </form>
                         </div>
+                        <p className="text-center text-xs text-zinc-400">Restricted access — authorised personnel only.</p>
                     </div>
                 </div>
-                <footer className="px-8 py-5 border-t border-zinc-100 dark:border-zinc-800 text-center text-xs text-zinc-400">
+                <footer className="px-8 py-5 border-t border-zinc-100 text-center text-xs text-zinc-400">
                     © {new Date().getFullYear()} CarePulse
                 </footer>
             </div>
