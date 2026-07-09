@@ -26,7 +26,7 @@ export function proxy(req: NextRequest) {
         const rest    = slugMatch[3] ?? ""
 
         // Allow login pages
-        if (rest === "/login" || rest === "/login/") return NextResponse.next()
+        if (rest === "/login" || rest === "/login/" || rest === "/register" || rest === "/register/") return NextResponse.next()
 
         if (portal === "admin" || portal === "staff") {
             const staffId = req.cookies.get(`staff_${slug}`)?.value
