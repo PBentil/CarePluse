@@ -1,3 +1,4 @@
+import { DoctorForm } from "@/components/admin/doctor-forms"
 "use client"
 
 import { useEffect, useState, useCallback } from "react"
