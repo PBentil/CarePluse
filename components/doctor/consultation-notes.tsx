@@ -17,9 +17,9 @@ const labelClass = "block text-xs font-medium text-zinc-500 dark:text-zinc-400 u
 
 export function ConsultationNotes({ appointment, onSuccess }: ConsultationNotesProps) {
     const [open, setOpen]                   = useState(false)
-    const [notes, setNotes]                 = useState(appointment.notes ?? "")
-    const [diagnosis, setDiagnosis]         = useState(appointment.diagnosis ?? "")
-    const [requiresLabTest, setRequiresLabTest] = useState(appointment.requiresLabTest ?? false)
+    const [notes, setNotes]                 = useState((appointment as any).notes ?? "")
+    const [diagnosis, setDiagnosis]         = useState((appointment as any).diagnosis ?? "")
+    const [requiresLabTest, setRequiresLabTest] = useState((appointment as any).requiresLabTest ?? false)
     const [loading, setLoading]             = useState(false)
 
     const handleSubmit = async () => {

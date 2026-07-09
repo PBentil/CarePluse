@@ -150,7 +150,7 @@ export function PatientDetails({ patientId, onClose, onEdit, onDelete }: Patient
                         {patient.identificationDocumentUrl && (
                             <div className="flex items-start justify-between px-4 py-3 border-b border-zinc-50 dark:border-zinc-800/50 last:border-0">
                                 <span className="text-xs text-zinc-400 dark:text-zinc-500 shrink-0 w-40">ID Document</span>
-                                
+                                <a
                                     href={patient.identificationDocumentUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"

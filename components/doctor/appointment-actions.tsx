@@ -91,7 +91,7 @@ export function DoctorAppointmentActions({ appointment, onSuccess }: Appointment
                         appointmentId={appointment.id}
                         patientId={appointment.patientId}
                         patientName={appointment.patient.fullName}
-                        diagnosis={appointment.diagnosis}
+                        diagnosis={(appointment as any).diagnosis}
                         onSuccess={onSuccess}
                     />
                 )}
