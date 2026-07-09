@@ -4,7 +4,7 @@
 import Link from "next/link"
 import { useParams, usePathname, useRouter } from "next/navigation"
 import { Logo } from "@/components/logo"
-import { LayoutDashboard, Calendar, Users, FlaskConical, Pill, Clock, LogOut } from "lucide-react"
+import { LayoutDashboard, Calendar, Users, FlaskConical, Pill, Clock, Settings, LogOut } from "lucide-react"
 import { useEffect, useState } from "react"
 
 export function DoctorSidebar() {
@@ -30,6 +30,7 @@ export function DoctorSidebar() {
         { label: "Lab Tests",     href: `/${slug}/doctor/lab-tests`,     icon: FlaskConical },
         { label: "Prescriptions", href: `/${slug}/doctor/prescriptions`, icon: Pill },
         { label: "Availability",  href: `/${slug}/doctor/availability`,  icon: Clock },
+        { label: "Settings",      href: `/${slug}/doctor/settings`,      icon: Settings },
     ]
 
     const handleLogout = async () => {

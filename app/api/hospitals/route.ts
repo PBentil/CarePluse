@@ -84,7 +84,8 @@ export async function POST(req: NextRequest) {
                     <h2 style="color:#18181b;">Welcome to CarePulse, ${name}!</h2>
                     <p style="color:#71717a;">Your hospital portal is ready. Here are your login details:</p>
                     <div style="background:#f4f4f5;border-radius:12px;padding:20px;margin:20px 0;">
-                        <p style="margin:4px 0;color:#18181b;"><strong>Portal URL:</strong> ${process.env.NEXT_PUBLIC_APP_URL}/${slug}/admin</p>
+                        <p style="margin:4px 0;color:#18181b;"><strong>Your hospital URL:</strong> ${process.env.NEXT_PUBLIC_APP_URL}/${slug}</p>
+                        <p style="margin:4px 0;color:#71717a;font-size:13px;">Share this URL with your doctors, nurses, and patients — they will see their own login option.</p>
                         <p style="margin:4px 0;color:#18181b;"><strong>Email:</strong> ${email}</p>
                         <p style="margin:4px 0;color:#18181b;"><strong>Temporary password:</strong> ${tempPassword}</p>
                     </div>

@@ -1,36 +1,188 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+> The complete digital healthcare SaaS platform for hospitals across Ghana and Africa.
+
+CarePulse replaces paper-based patient intake with a connected digital system — covering patient registration, doctor consultations, lab tests, prescriptions, payments, and drug delivery. Built as a multi-tenant SaaS where hospitals subscribe and get their own isolated portal.
+
+---
+
+## Live Demo
+
+**Demo hospital slug:** `demo-hospital`
+
+| Role | URL | Email | Password |
+|------|-----|-------|----------|
+| Admin | `/demo-hospital/admin/login` | admin@demohospital.com | admin123 |
+| Doctor | `/demo-hospital/doctor/login` | dr.mensah@demohospital.com | doctor123 |
+| Nurse | `/demo-hospital/admin/login` | nurse@demohospital.com | staff123 |
+| Receptionist | `/demo-hospital/admin/login` | reception@demohospital.com | staff123 |
+| Pharmacist | `/demo-hospital/admin/login` | pharmacy@demohospital.com | staff123 |
+| Patient | `/demo-hospital/patient/login` | kofi@example.com | OTP via email |
+| Super Admin | `/superadmin/login` | admin@carepulse.app | superadmin123 |
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | Next.js 16 (App Router), Tailwind CSS, React Hook Form, Zod |
+| Backend | Next.js API Routes |
+| Database | PostgreSQL + Prisma ORM |
+| Auth | Custom cookie-based auth (bcrypt), OTP for patients |
+| Video | Daily.co |
+| Payments | Paystack (Mobile Money + Card) |
+| Notifications | Twilio (SMS) + Gmail (Email) |
+| File uploads | Cloudinary |
+| Deployment | Vercel (recommended) |
+
+---
+
+## Features
+
+### Patient Journey
+1. **Register** — patient fills intake form, selects primary doctor
+2. **Book appointment** — picks doctor, date, and available time slot
+3. **Video consultation** — secure HD video via Daily.co
+4. **Lab tests** — doctor orders tests, patient uploads results or receives from lab
+5. **Digital prescription** — itemised drug list from hospital catalogue
+6. **Pay online** — Mobile Money or card via Paystack
+7. **Drug delivery** — Packed → On the way → Delivered with SMS/email at each stage
+
+### Portals
+- **Super Admin** (`/superadmin`) — platform-wide management, hospitals, subscriptions, analytics
+- **Hospital Admin** (`/[slug]/admin`) — full hospital management
+- **Staff** (`/[slug]/admin` → role-based) — nurse, receptionist, pharmacist dashboards
+- **Doctor** (`/[slug]/doctor`) — patients, appointments, video, notes, lab tests, prescriptions
+- **Patient** (`/[slug]/patient`) — register, book, video, lab tests, pay, track
+
+### SaaS
+- Multi-tenant — each hospital fully isolated by `hospitalId`
+- Slug-based routing — `carepulse.com/[hospital]/admin`
+- Subscription plans — Starter (GH₵500), Growth (GH₵1500), Enterprise (GH₵4000)
+- 14-day free trial on registration
+- Super admin can activate, suspend, and monitor all hospitals
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+- Node.js 18+
+- PostgreSQL
+- Accounts: Daily.co, Paystack, Twilio, Gmail, Cloudinary
+
+### Installation
+
+```bash
+git clone https://github.com/your-username/carepulse
+cd carepulse
+npm install
+```
+
+### Environment Variables
+
+Create a `.env` file:
+
+```env
+DATABASE_URL="postgresql://user:password@localhost:5432/carepulse"
+
+TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+TWILIO_AUTH_TOKEN=your_auth_token
+TWILIO_PHONE_NUMBER=+1234567890
+
+GMAIL_USER=your@gmail.com
+GMAIL_APP_PASSWORD=xxxx xxxx xxxx xxxx
+
+DAILY_API_KEY=your_daily_api_key
+NEXT_PUBLIC_DAILY_DOMAIN=your_subdomain
+
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+
+PAYSTACK_SECRET_KEY=sk_live_xxxx
+NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY=pk_live_xxxx
+
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+### Database Setup
+
+```bash
+npx prisma migrate dev
+node prisma/seed.js
+```
+
+### Run
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit `http://localhost:3000`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
+app/
+[slug]/
+admin/          # Hospital admin + staff portal
+doctor/         # Doctor portal
+patient/        # Patient portal
+superadmin/       # CarePulse super admin
+register/         # Hospital self-registration
+pricing/          # Pricing page
+features/         # Features page
+api/
+[slug]/
+admin/        # Hospital admin API routes
+doctor/       # Doctor API routes
+patient/      # Patient API routes
+superadmin/     # Super admin API routes
+auth/           # Authentication routes
+hospitals/      # Hospital registration API
+components/
+hospital/
+admin-sidebar   # Hospital admin sidebar
+doctor/         # Doctor portal components
+patient/        # Patient portal components
+staff/          # Staff portal components
+superadmin/       # Super admin components
+admin/            # Shared admin UI components
+lib/
+auth.ts           # Auth helpers (slug-aware)
+daily.ts          # Daily.co video rooms
+cloudinary.ts     # File uploads
+notification.ts   # SMS + Email
+plans.ts          # Subscription plan config
+slug.ts           # Slug generation
+prisma/
+schema.prisma     # Database schema
+seed.js           # Demo data seed
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Subscription Plans
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Plan | Price | Clinics | Doctors |
+|------|-------|---------|---------|
+| Starter | GH₵ 500/mo | 1 | Up to 5 |
+| Growth | GH₵ 1,500/mo | 5 | Up to 25 |
+| Enterprise | GH₵ 4,000/mo | Unlimited | Unlimited |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Roadmap
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- [ ] Push notifications
+- [ ] Prescription PDF download
+- [ ] Mobile app (React Native)
+- [ ] Multi-language support (English, Twi, French)
+- [ ] EHR integration
+- [ ] Insurance claims processing
+- [ ] Telemedicine scheduling with AI
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## Made in Ghana 🇬🇭
+
+Built with love to improve healthcare delivery across Africa.
