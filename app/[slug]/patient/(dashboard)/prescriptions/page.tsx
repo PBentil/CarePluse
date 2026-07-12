@@ -76,13 +76,21 @@ export default function PatientPrescriptionsPage() {
                                     </div>
                                 ))}
                             </div>
-                            {rx.status === "pending" && (
-                                <div className="px-6 py-4 border-t border-zinc-100">
-                                    <button onClick={() => router.push(`/${slug}/patient/payment/${rx.id}`)} className="w-full px-4 py-2.5 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors">
+                            <div className="px-6 py-4 border-t border-zinc-100 flex gap-3">
+                                <a
+                                    href={`/api/${slug}/patient/prescriptions/${rx.id}/pdf`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 text-center px-4 py-2.5 rounded-xl border border-zinc-200 text-zinc-600 text-sm font-medium hover:bg-zinc-50 transition-colors"
+                                >
+                                    Download PDF
+                                </a>
+                                {rx.status === "pending" && (
+                                    <button onClick={() => router.push(`/${slug}/patient/payment/${rx.id}`)} className="flex-1 px-4 py-2.5 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors">
                                         Pay GH₵ {rx.items.reduce((s, i) => s + i.price, 0).toFixed(2)}
                                     </button>
-                                </div>
-                            )}
+                                )}
+                            </div>
                         </div>
                     ))}
                 </div>

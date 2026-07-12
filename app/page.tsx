@@ -141,7 +141,7 @@ export default function LandingPage() {
                         <Activity className="h-3.5 w-3.5" />
                         Healthcare management platform for Ghana & Africa
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-bold text-zinc-900 dark:text-white leading-tight tracking-tight">
+                    <h1 className="text-3xl md:text-6xl font-bold text-zinc-900 dark:text-white leading-tight tracking-tight">
                         The complete digital<br />
                         <span className="text-primary">healthcare platform</span>
                     </h1>
@@ -161,7 +161,7 @@ export default function LandingPage() {
 
             {/* Stats */}
             <section className="py-12 border-y border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900">
-                <div className="max-w-4xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div className="max-w-4xl mx-auto px-4 md:px-6 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
                     {stats.map(({ value, label }) => (
                         <div key={label} className="text-center">
                             <p className="text-2xl md:text-3xl font-bold text-zinc-900 dark:text-white">{value}</p>
@@ -178,7 +178,7 @@ export default function LandingPage() {
                         <p className="text-xs font-medium text-primary uppercase tracking-widest mb-3">How it works</p>
                         <h2 className="text-3xl font-bold text-zinc-900 dark:text-white">Up and running in minutes</h2>
                     </div>
-                    <div className="grid md:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                         {steps.map(({ number, title, description }) => (
                             <div key={number} className="space-y-3">
                                 <p className="text-4xl font-bold text-primary/20">{number}</p>
@@ -198,7 +198,7 @@ export default function LandingPage() {
                         <h2 className="text-3xl font-bold text-zinc-900 dark:text-white">Everything your hospital needs</h2>
                         <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-3 max-w-xl mx-auto">One platform covering the entire patient journey — from registration to delivery.</p>
                     </div>
-                    <div className="grid md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                         {features.map(({ icon: Icon, title, description, color, bg }) => (
                             <div key={title} className="bg-white dark:bg-zinc-950 rounded-2xl border border-zinc-100 dark:border-zinc-800 p-6 space-y-3">
                                 <div className={`h-10 w-10 rounded-xl ${bg} flex items-center justify-center`}>
@@ -225,7 +225,7 @@ export default function LandingPage() {
                         <h2 className="text-3xl font-bold text-zinc-900 dark:text-white">Simple, transparent pricing</h2>
                         <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-3">Start with a 14-day free trial. No credit card required.</p>
                     </div>
-                    <div className="grid md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                         {plans.map(({ name, price, period, features, cta, popular }) => (
                             <div key={name} className={`rounded-2xl border p-6 space-y-5 relative ${popular ? "border-primary bg-primary/5" : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900"}`}>
                                 {popular && (

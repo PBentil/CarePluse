@@ -110,7 +110,7 @@ export default function RegisterPage() {
             <div className="flex flex-1 items-center justify-center px-4 py-12">
                 <div className="w-full max-w-lg space-y-8">
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 md:gap-2 overflow-x-auto pb-2">
                         {(["details", "plan", "payment"] as Step[]).map((s, i) => (
                             <div key={s} className="flex items-center gap-2 flex-1 last:flex-none">
                                 <div className={`h-7 w-7 rounded-full flex items-center justify-center text-xs font-medium shrink-0 ${

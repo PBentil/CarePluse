@@ -10,12 +10,12 @@ import { Loader2 } from "lucide-react"
 const inputClass = "w-full rounded-xl border border-zinc-200 bg-white px-3 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
 const labelClass = "block text-xs font-medium text-zinc-500 uppercase tracking-wide mb-1.5"
 
-export default function AdminSettingsPage() {
+export default function DoctorSettingsPage() {
     const { slug }  = useParams<{ slug: string }>()
-    const [current, setCurrent] = useState("")
-    const [newPw, setNewPw]     = useState("")
-    const [confirm, setConfirm] = useState("")
-    const [saving, setSaving]   = useState(false)
+    const [current, setCurrent]   = useState("")
+    const [newPw, setNewPw]       = useState("")
+    const [confirm, setConfirm]   = useState("")
+    const [saving, setSaving]     = useState(false)
 
     const handleSubmit = async () => {
         if (!current || !newPw || !confirm) { toast.error("All fields required"); return }
@@ -23,13 +23,13 @@ export default function AdminSettingsPage() {
         if (newPw.length < 8) { toast.error("Password must be at least 8 characters"); return }
         setSaving(true)
         try {
-            const res = await fetch(`/api/${slug}/admin/staff/change-password`, {
+            const res = await fetch(`/api/${slug}/doctor/change-password`, {
                 method: "PATCH", headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ currentPassword: current, newPassword: newPw }),
             })
             const data = await res.json()
             if (!res.ok) throw new Error(data.error)
-            toast.success("Password updated successfully")
+            toast.success("Password updated")
             setCurrent(""); setNewPw(""); setConfirm("")
         } catch (error: unknown) {
             toast.error(error instanceof Error ? error.message : "Error")
