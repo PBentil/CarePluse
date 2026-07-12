@@ -109,7 +109,7 @@ export default function HospitalLandingPage() {
             </header>
 
             <div className="flex flex-1 items-center justify-center px-4 py-12">
-                <div className="w-full max-w-lg space-y-8">
+                <div className="w-full max-w-lg space-y-6 md:space-y-8">
 
                     <div className="text-center space-y-2">
                         <div className="flex justify-center mb-4">
