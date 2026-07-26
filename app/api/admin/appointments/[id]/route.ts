@@ -7,7 +7,7 @@ import {
     sendEmail,
     sendSMS,
 } from "@/lib/notification"
-import { createVideoRoom } from "@/lib/daily"
+import { createVideoRoom } from "@/lib/video"
 
 export async function PATCH(
     req: NextRequest,

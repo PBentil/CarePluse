@@ -1,5 +1,6 @@
-import { DoctorForm } from "@/components/admin/doctor-forms"
 "use client"
+
+import { DoctorForm } from "@/components/admin/doctor-forms"
 
 import { useEffect, useState, useCallback } from "react"
 import { Plus, ChevronLeft, ChevronRight } from "lucide-react"

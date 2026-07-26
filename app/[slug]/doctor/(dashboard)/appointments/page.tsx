@@ -45,7 +45,7 @@ export default function DoctorAppointmentsPage() {
     const [statusFilter, setStatusFilter] = useState("")
     const [loading, setLoading]           = useState(true)
     const [actionAppt, setActionAppt]     = useState<Appointment | null>(null)
-    const [actionType, setActionType]     = useState<"confirm"|"reject"|"reschedule"|"notes"|"labs"|"rx"|null>(null)
+    const [actionType, setActionType]     = useState<"confirm"|"reject"|"reschedule"|"notes"|"labs"|"rx"|"complete"|null>(null)
     const [saving, setSaving]             = useState(false)
 
     const [rejectionReason, setRejectionReason]   = useState("")

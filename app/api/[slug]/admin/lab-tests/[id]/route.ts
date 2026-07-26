@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma"
 import { getStaffFromRequest } from "@/lib/auth"
 import { sendEmail, sendSMS } from "@/lib/notification"
 import { sendPushToUsers } from "@/lib/push"
-import { sendPushToUsers } from "@/lib/push"
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ slug: string; id: string }> }) {
     try {

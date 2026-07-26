@@ -1,6 +1,5 @@
 import { MobileNav } from "@/components/mobile-nav"
 import { SubscriptionBanner } from "@/components/subscription-banner"
-import { SubscriptionBanner } from "@/components/subscription-banner"
 
 import { HospitalAdminSidebar } from "@/components/hospital/admin-sidebar"
 import { HospitalAdminHeader } from "@/components/hospital/admin-header"
