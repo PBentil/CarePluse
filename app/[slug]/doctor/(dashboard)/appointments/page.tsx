@@ -23,6 +23,8 @@ const statusStyles: Record<string, string> = {
     confirmed:   "bg-emerald-50 text-emerald-600",
     rejected:    "bg-red-50 text-red-500",
     rescheduled: "bg-blue-50 text-blue-600",
+    cancelled:   "bg-zinc-100 text-zinc-500",
+    completed:   "bg-purple-50 text-purple-600",
 }
 const filters = [
     { label: "All", value: "" }, { label: "Pending", value: "pending" },
@@ -176,6 +178,23 @@ export default function DoctorAppointmentsPage() {
             </div>
             <DataTable data={appointments} columns={columns} loading={loading} emptyMessage="No appointments yet" />
             <Pagination page={page} total={total} pageSize={PAGE_SIZE} onPageChange={setPage} />
+
+            {/* Complete modal */}
+            <Modal open={actionType === "complete"} onClose={() => setActionType(null)} title="Mark as Completed" size="sm">
+                <div className="space-y-4">
+                    <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-4">
+                        <p className="text-xs font-medium text-emerald-700">{actionAppt?.patient.fullName}</p>
+                        <p className="text-xs text-emerald-600">{actionAppt && new Date(actionAppt.date).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" })}</p>
+                    </div>
+                    <p className="text-sm text-zinc-500">Mark this appointment as completed. The patient will be notified.</p>
+                    <div className="flex gap-2">
+                        <button onClick={() => setActionType(null)} className="flex-1 px-4 py-2.5 rounded-xl border border-zinc-200 text-sm text-zinc-600 hover:bg-zinc-50 transition-colors">Cancel</button>
+                        <button onClick={handleAction} disabled={saving} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium disabled:opacity-50 transition-colors">
+                            {saving && <Loader2 className="h-4 w-4 animate-spin" />} Mark completed
+                        </button>
+                    </div>
+                </div>
+            </Modal>
 
             {/* Confirm modal */}
             <Modal open={actionType === "confirm"} onClose={() => setActionType(null)} title="Confirm Appointment" size="sm">
