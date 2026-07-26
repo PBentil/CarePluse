@@ -22,7 +22,7 @@ export default function BookAppointmentPage() {
     const [form, setForm] = useState({ doctorId: "", date: "", time: "", reason: "", notes: "" })
 
     useEffect(() => {
-        fetch(`/api/${slug}/admin/doctors?limit=100`)
+        fetch(`/api/${slug}/public/doctors`)
             .then(r => r.json())
             .then(d => setDoctors(d.doctors ?? []))
     }, [slug])

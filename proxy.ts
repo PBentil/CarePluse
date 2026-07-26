@@ -13,7 +13,7 @@ export function proxy(req: NextRequest) {
     }
 
     // Public paths
-    const publicPaths = ["/register", "/", "/api/hospitals", "/api/auth"]
+    const publicPaths = ["/register", "/", "/api/hospitals", "/api/auth", "/api/push", "/api/info"]
     if (publicPaths.some(p => pathname === p || pathname.startsWith(p))) {
         return NextResponse.next()
     }
@@ -21,12 +21,20 @@ export function proxy(req: NextRequest) {
     // Slug-based routes: /[slug]/admin, /[slug]/doctor, /[slug]/patient, /[slug]/staff
     const slugMatch = pathname.match(/^\/([a-z0-9-]+)\/(admin|doctor|patient|staff)(\/.*)?$/)
     if (slugMatch) {
-        const slug    = slugMatch[1]
-        const portal  = slugMatch[2]
-        const rest    = slugMatch[3] ?? ""
+        const slug   = slugMatch[1]
+        const portal = slugMatch[2]
+        const rest   = slugMatch[3] ?? ""
 
-        // Allow login pages
-        if (rest === "/login" || rest === "/login/" || rest === "/register" || rest === "/register/") return NextResponse.next()
+        // Allow login and register pages
+        if (rest === "/login" || rest === "/login/" || rest === "/register" || rest === "/register/") {
+            return NextResponse.next()
+        }
+
+        // Check subscription status
+        const hospitalSubStatus = req.cookies.get(`hospital_status_${slug}`)?.value
+        if (hospitalSubStatus === "expired") {
+            return NextResponse.redirect(new URL(`/${slug}/admin/login`, req.url))
+        }
 
         if (portal === "admin" || portal === "staff") {
             const staffId = req.cookies.get(`staff_${slug}`)?.value
@@ -43,6 +51,16 @@ export function proxy(req: NextRequest) {
             if (!patientId) return NextResponse.redirect(new URL(`/${slug}/patient/login`, req.url))
         }
 
+        return NextResponse.next()
+    }
+
+    // Allow public slug API routes
+    if (pathname.match(/^\/api\/[a-z0-9-]+\/public\//)) {
+        return NextResponse.next()
+    }
+
+    // Allow hospital info route
+    if (pathname.match(/^\/api\/[a-z0-9-]+\/info$/)) {
         return NextResponse.next()
     }
 
