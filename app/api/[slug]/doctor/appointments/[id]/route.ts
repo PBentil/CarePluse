@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { getDoctorFromRequest } from "@/lib/auth"
-import { createVideoRoom } from "@/lib/daily"
+import { createVideoRoom } from "@/lib/video"
 import { sendEmail, sendSMS } from "@/lib/notification"
 import { sendPushToUsers } from "@/lib/push"
 
@@ -31,7 +31,7 @@ export async function PATCH(
         let updateData: any = {}
 
         if (action === "confirm") {
-            const { url: videoRoomUrl, name: videoRoomName } = await createVideoRoom(id)
+            const { url: videoRoomUrl, name: videoRoomName } = createVideoRoom(id)
             updateData = { status: "confirmed", videoRoomUrl, videoRoomName }
             const formatted = new Date(existing.date).toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })
             const patientSubs = await prisma.pushSubscription.findMany({
