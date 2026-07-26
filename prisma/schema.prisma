@@ -32,6 +32,9 @@ model Hospital {
   orders        Order[]
   drugs         Drug[]
   subscription  Subscription?
+  pushSubscriptions PushSubscription[]
+
+
 }
 
 model Subscription {
@@ -286,4 +289,17 @@ model Order {
   hospital     Hospital     @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
   prescription Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
   patient      Patient      @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+model PushSubscription {
+  id         String   @id @default(uuid())
+  hospitalId String
+  userId     String
+  userType   String   // doctor | patient | staff
+  endpoint   String   @unique
+  p256dh     String
+  auth       String
+  createdAt  DateTime @default(now())
+
+  hospital   Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
 }

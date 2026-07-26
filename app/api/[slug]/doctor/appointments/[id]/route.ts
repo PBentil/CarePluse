@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { getDoctorFromRequest } from "@/lib/auth"
 import { createVideoRoom } from "@/lib/daily"
 import { sendEmail, sendSMS } from "@/lib/notification"
+import { sendPushToUsers } from "@/lib/push"
 
 export async function PATCH(
     req: NextRequest,
@@ -33,9 +34,13 @@ export async function PATCH(
             const { url: videoRoomUrl, name: videoRoomName } = await createVideoRoom(id)
             updateData = { status: "confirmed", videoRoomUrl, videoRoomName }
             const formatted = new Date(existing.date).toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })
+            const patientSubs = await prisma.pushSubscription.findMany({
+                where: { userId: existing.patientId, userType: "patient" },
+            })
             await Promise.all([
                 sendSMS(existing.patient.phone, `Hi ${existing.patient.fullName}, your appointment with Dr. ${existing.doctor.name} on ${formatted} is confirmed. Join: ${videoRoomUrl}`),
                 sendEmail({ to: existing.patient.email, subject: "Appointment Confirmed", html: `<div style="font-family:sans-serif;padding:32px;"><h2>Appointment Confirmed</h2><p>Hi ${existing.patient.fullName},</p><p>Your appointment with Dr. ${existing.doctor.name} on ${formatted} is confirmed.</p><a href="${videoRoomUrl}" style="display:inline-block;margin-top:12px;padding:12px 24px;background:#18181b;color:#fff;border-radius:10px;text-decoration:none;">Join Video Call</a></div>` }),
+                sendPushToUsers(patientSubs, { title: "Appointment Confirmed ✓", body: `Your appointment with Dr. ${existing.doctor.name} on ${formatted} is confirmed.`, url: `/${slug}/patient/appointments` }),
             ])
         } else if (action === "reject") {
             if (!rejectionReason) return NextResponse.json({ error: "Rejection reason required" }, { status: 400 })

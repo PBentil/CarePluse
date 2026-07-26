@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { getStaffFromRequest } from "@/lib/auth"
 import { sendEmail, sendSMS } from "@/lib/notification"
+import { sendPushToUsers } from "@/lib/push"
+import { sendPushToUsers } from "@/lib/push"
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ slug: string; id: string }> }) {
     try {
@@ -29,9 +31,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ sl
 
         if (messages[status]) {
             const { sms, subject, body } = messages[status]
+            const patientSubs = await prisma.pushSubscription.findMany({
+                where: { userId: existing.patientId, userType: "patient" },
+            })
             await Promise.all([
                 sendSMS(existing.patient.phone, sms),
                 sendEmail({ to: existing.patient.email, subject, html: `<div style="font-family:sans-serif;padding:32px;"><h2>${subject}</h2><p>Hi ${existing.patient.fullName},</p><p>${body}</p></div>` }),
+                sendPushToUsers(patientSubs, { title: subject, body: sms, url: `/${slug}/patient/orders` }),
             ])
         }
 

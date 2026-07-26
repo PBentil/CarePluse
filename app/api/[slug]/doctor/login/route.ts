@@ -37,6 +37,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
             httpOnly: false, secure: process.env.NODE_ENV === "production",
             sameSite: "lax", path: "/", maxAge: 60 * 60 * 24 * 7,
         })
+        response.cookies.set(`doctor_${slug}_id`, doctor.id, {
+            httpOnly: false, secure: process.env.NODE_ENV === "production",
+            sameSite: "lax", path: "/", maxAge: 60 * 60 * 24 * 7,
+        })
         response.cookies.set(`hospital_${slug}`, hospital.id, {
             httpOnly: true, secure: process.env.NODE_ENV === "production",
             sameSite: "lax", path: "/", maxAge: 60 * 60 * 24 * 7,
