@@ -89,7 +89,19 @@ export default function PatientOrdersPage() {
                                     </div>
                                     <div className="mt-3 pt-3 border-t border-zinc-50 flex items-center justify-between">
                                         <p className="text-xs text-zinc-400">{order.deliveryAddress}</p>
-                                        <p className="text-sm font-semibold text-zinc-900">GH₵ {order.totalAmount.toFixed(2)}</p>
+                                        <div className="flex items-center gap-3">
+                                            <p className="text-sm font-semibold text-zinc-900">GH₵ {order.totalAmount.toFixed(2)}</p>
+                                            {order.status === "delivered" && (
+                                                <a
+                                                    href={`/api/${slug}/patient/orders/${order.id}/invoice`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-xs text-primary hover:underline"
+                                                >
+                                                    Receipt
+                                                </a>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

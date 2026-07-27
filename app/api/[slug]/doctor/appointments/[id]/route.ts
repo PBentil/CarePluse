@@ -59,6 +59,12 @@ export async function PATCH(
             ])
         } else if (action === "notes") {
             updateData = { notes: notes ?? null, diagnosis: diagnosis ?? null, requiresLabTest: requiresLabTest ?? false }
+        } else if (action === "complete") {
+            updateData = { status: "completed" }
+            await Promise.all([
+                sendSMS(existing.patient.phone, `Hi ${existing.patient.fullName}, your consultation with Dr. ${existing.doctor.name} is complete. Thank you for using CarePulse.`),
+                sendEmail({ to: existing.patient.email, subject: "Consultation Complete", html: `<div style="font-family:sans-serif;padding:32px;"><h2>Consultation Complete</h2><p>Hi ${existing.patient.fullName},</p><p>Your consultation with Dr. ${existing.doctor.name} is now complete. Log in to view any prescriptions or lab tests ordered.</p></div>` }),
+            ])
         } else {
             return NextResponse.json({ error: "Invalid action" }, { status: 400 })
         }

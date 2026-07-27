@@ -258,10 +258,26 @@ export default function RegisterPage() {
                         </div>
                     )}
 
-                    <p className="text-center text-xs text-zinc-400">
-                        Already have an account?{" "}
-                        <a href="#" className="text-primary hover:underline">Sign in to your hospital</a>
-                    </p>
+                    <div className="bg-white rounded-2xl border border-zinc-100 p-4 space-y-3">
+                        <p className="text-xs text-zinc-500 text-center">Already have an account? Enter your hospital name to sign in</p>
+                        <div className="flex gap-2">
+                            <input
+                                id="signin-slug"
+                                placeholder="e.g. demo-hospital"
+                                className="flex-1 rounded-xl border border-zinc-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                            />
+                            <button
+                                onClick={() => {
+                                    const slug = (document.getElementById("signin-slug") as HTMLInputElement)?.value?.trim()
+                                    if (slug) window.location.href = `/${slug}`
+                                    else toast.error("Please enter your hospital name")
+                                }}
+                                className="px-4 py-2 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors"
+                            >
+                                Go →
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
